@@ -10,7 +10,7 @@ Coffeez enables supporters to buy virtual "coffees" for their favorite creators 
 
 ### Creator Management
 - **Profiles**: Customizable creator profiles with usernames, display names, bios, and profile pictures
-- **Authentication**: Email Login and Google OAuth integration
+- **Authentication**: Email Login and verification
 - **Security**: Comprehensive username validation to prevent impersonation and reserved terms
 - **Dashboard**: Creator statistics showing total coffees received and estimated USD earnings
 
@@ -52,7 +52,6 @@ MYSQL_PORT=3306
 - **Cleanup**: Automated expired purchase removal
 
 ### External Services
-- **Google OAuth**: Social authentication
 - **hCaptcha**: Bot protection
 - **CryptoCompare API**: TRX price data
 - **TRON Blockchain**: Payment verification

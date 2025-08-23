@@ -31,9 +31,6 @@ urlpatterns = [
     path('accounts/login/', views.login_page, name='account_login'),
     path('accounts/logout/', auth_views.LogoutView.as_view(next_page='/'), name='account_logout'),
     path('accounts/signup/', views.redirect_signup, name='account_signup'),
-    # Include django-allauth URLs for social authentication (Google OAuth)
-    path('accounts/', include('allauth.socialaccount.urls')),
-    path('accounts/', include('allauth.socialaccount.providers.google.urls')),
     
     # Email verification and account setup
     path('verify-email/', views.verify_email, name='verify_email'),

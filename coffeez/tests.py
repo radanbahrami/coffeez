@@ -548,29 +548,3 @@ class EmailVerificationTests(TestCase):
         resp = self.client.get(reverse('verify_email'))
         self.assertEqual(resp.status_code, 302)
         self.assertEqual(resp.url, '/finish-setup/')
-
-
-class AdapterTests(TestCase):
-    def test_get_login_redirect_url(self):
-        """CustomSocialAccountAdapter redirects to /finish-setup/ after login."""
-        from .adapters import CustomSocialAccountAdapter
-        adapter = CustomSocialAccountAdapter()
-        # Fake request not needed for logic here
-        self.assertEqual(adapter.get_login_redirect_url(None), '/finish-setup/')
-
-    def test_save_user_updates_creator_email(self):
-        """save_user stores email on User and Creator profile from social data."""
-        from .adapters import CustomSocialAccountAdapter
-        adapter = CustomSocialAccountAdapter()
-        user = User.objects.create_user('u1', email='')
-        # Build a light-weight sociallogin object
-        sl = type('SL', (), {})()
-        sl.account = type('A', (), {'extra_data': {'email': 'abc@example.com'}})()
-        sl.user = user
-        request = MagicMock()
-        # Patch parent save_user to bypass allauth internals
-        with patch('coffeez.adapters.DefaultSocialAccountAdapter.save_user', return_value=user):
-            adapter.save_user(request, sl)
-        # Verify Creator email is updated
-        creator = Creator.objects.get(user=user)
-        self.assertEqual(creator.email, 'abc@example.com')

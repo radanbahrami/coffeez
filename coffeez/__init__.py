@@ -6,7 +6,7 @@ A platform for content creators to receive cryptocurrency donations through virt
 Features:
 - Creator profiles with customizable usernames and bios
 - TRX (TRON) cryptocurrency payment integration
-- Google OAuth authentication with custom flow
+- Email and password authentication system
 - Email verification system
 - hCaptcha bot protection
 - Blockchain payment verification

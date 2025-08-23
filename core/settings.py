@@ -5,7 +5,6 @@ Configuration file for the Coffeez application, a platform for creators
 to receive cryptocurrency donations through virtual "coffee" purchases.
 
 Key Features Configured:
-- Google OAuth integration via django-allauth
 - MySQL database support with PyMySQL
 - Email verification system
 - hCaptcha bot protection
@@ -57,50 +56,17 @@ INSTALLED_APPS = [
 
     # Coffeez main application
     'coffeez',
-
-    # Django Allauth applications for social authentication
-    'django.contrib.sites',  # Required by django-allauth
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.google',  # Google OAuth provider
 ]
-
-# Site ID required by django-allauth
-SITE_ID = 2
 
 # Authentication Backends
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',  # Default Django authentication
-    'allauth.account.auth_backends.AuthenticationBackend',  # Allauth social authentication
 ]
 
 # URL Redirects Configuration
 LOGIN_URL = '/accounts/login/'  # Custom login page
 LOGIN_REDIRECT_URL = '/finish-setup/'  # Post-login profile setup
 LOGOUT_REDIRECT_URL = '/'  # Homepage after logout
-
-# Django Allauth Configuration
-# Restricts to social authentication (Google) only, disabling traditional signup
-SOCIALACCOUNT_ADAPTER = 'coffeez.adapters.CustomSocialAccountAdapter'
-SOCIALACCOUNT_LOGIN_ON_GET = True  # Allow login on GET request
-ACCOUNT_SIGNUP_ENABLED = False  # Disable allauth's email/password signup
-ACCOUNT_EMAIL_VERIFICATION = 'none'  # Custom email verification system
-ACCOUNT_RATE_LIMITS = {
-    'login_failed': None,  # Disable rate limiting for failed logins
-}
-
-# Google OAuth Provider Configuration
-SOCIALACCOUNT_PROVIDERS = {
-    'google': {
-        'SCOPE': [
-            'email',  # Request email address from Google
-        ],
-        'AUTH_PARAMS': {
-            'access_type': 'online',  # Don't request offline access
-        }
-    }
-}
 
 
 MIDDLEWARE = [
@@ -111,7 +77,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'core.urls'

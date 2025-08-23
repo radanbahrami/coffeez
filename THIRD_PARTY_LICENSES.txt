@@ -34,10 +34,6 @@ Django==5.2.4
 License: BSD-3-Clause License
 Homepage: https://pypi.org/project/Django/
 
-django-allauth==65.10.0
-License: MIT License
-Homepage: https://pypi.org/project/django-allauth/
-
 idna==3.10
 License: BSD-3-Clause License
 Homepage: https://pypi.org/project/idna/

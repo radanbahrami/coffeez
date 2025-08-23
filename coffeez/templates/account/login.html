@@ -1,6 +1,5 @@
 {% extends "coffeez/base.html" %}
 {% load static %}
-{% load socialaccount %}
 
 {% block title %}Login{% endblock %}
 
@@ -68,14 +67,7 @@
         <span id="toggle-text">Don't have an account?</span>
         <a href="#" id="toggle-link">Create one</a>
     </div>
-    <p style="margin-bottom: 1rem;">OR</p>
-    <a href="{% provider_login_url 'google' %}">
-        <img src="{% static 'images/web_dark_sq_ctn@2x.png' %}" alt="Continue with Google" style="all: unset; height:48px;">
-    </a>
 </div>
-<p style="font-size: 0.8rem; color: #888; text-align:center; margin-top: 1rem;">
-    By continuing with Google, you agree to our <a href="/terms">Terms of Service</a> and <a href="/privacy">Privacy Policy</a>.
-</p>
 {% endblock %}
 
 {% block extra_js %}

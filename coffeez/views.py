@@ -16,7 +16,6 @@ Dependencies:
 - Django framework for web functionality
 - TRON blockchain integration for payments
 - Email verification system
-- Social authentication via Google OAuth
 - hCaptcha for bot protection
 """
 
@@ -425,7 +424,7 @@ def check_donation(request, purchase_id):
         'expired': purchase.status == 'expired',
     })
 
-# Set a unique username for first-time Google users
+
 @login_required
 def finish_setup(request):
     """
@@ -433,7 +432,7 @@ def finish_setup(request):
     
     This view handles the final step of creator onboarding where users
     set their username, display name, and wallet address. Required after
-    Google OAuth login or email verification.
+    email verification.
     
     GET: Display setup form
     POST: Process JSON data and create/update Creator profile
@@ -727,7 +726,7 @@ def login_page(request):
     return render(request, 'account/login.html')
 
 def redirect_signup(request):
-    # Do not allow allauth's default signup; send to our login in signup mode
+    # Redirect signup requests to login page in signup mode
     return redirect('/accounts/login?mode=signup')
 
 def email_login(request):
