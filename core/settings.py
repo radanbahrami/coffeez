@@ -162,11 +162,15 @@ MEDIA_ROOT = os.path.join(BASE_DIR, '../media')  # Directory outside web root
 MEDIA_URL = '/media/'  # Logical URL for media files
 
 # Email settings (development defaults; override via environment in production)
-EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
-EMAIL_HOST = os.environ.get('EMAIL_HOST', '')
-EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '0') or 0)
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
-EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True') == 'True'
-EMAIL_USE_SSL = os.environ.get('EMAIL_USE_SSL', 'False') == 'False' and False  # prefer TLS
-DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'no-reply@coffeez.local')
+if os.environ.get("DJANGO_DEBUG", "False") == "True":
+    EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
+    DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'noreply@localhost')
+else:
+    EMAIL_BACKEND = os.environ["EMAIL_BACKEND"]
+    EMAIL_HOST = os.environ["EMAIL_HOST"]
+    EMAIL_PORT = int(os.environ["EMAIL_PORT"])
+    EMAIL_HOST_USER = os.environ["EMAIL_HOST_USER"]
+    EMAIL_HOST_PASSWORD = os.environ["EMAIL_HOST_PASSWORD"]
+    EMAIL_USE_TLS = os.environ["EMAIL_USE_TLS"] == "True"
+    EMAIL_USE_SSL = os.environ["EMAIL_USE_SSL"] == "True"
+    DEFAULT_FROM_EMAIL = os.environ["DEFAULT_FROM_EMAIL"]
