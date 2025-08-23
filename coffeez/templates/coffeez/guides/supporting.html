@@ -1,0 +1,108 @@
+{% extends 'coffeez/base.html' %}
+
+{% block title %}Guide - How to Support Creators{% endblock %}
+
+{% block content %}
+<body>
+  <div>
+    <h1>How to Support Creators</h1>
+
+    <div style="background: var(--bg-dark); border-left: 4px solid var(--accent); padding: 10px; padding-left: 1.3rem; margin-top: 15px; border-radius: 4px; border: 1px solid var(--border);">
+      <p style="color: var(--accent); text-align: center;">
+        <b>New to crypto?</b> This guide will walk you through every step to send a donation using TRX on Coffeez.
+      </p>
+    </div>
+
+    <div>
+      <h2>What You’ll Need</h2>
+      <ul style="list-style-type: disc; padding-left: 20px; margin-top: 10px;">
+        <li>A small amount of <strong>TRX (Tron)</strong> cryptocurrency</li>
+        <li>A <strong>TRON-compatible wallet</strong> (mobile app, browser extension)</li>
+      </ul>
+    </div>
+
+    <p style="color: var(--accent);"><strong>Good News: </strong>You do not need a Coffeez account to support a creator.</p>
+
+    <div>
+      <h2>Step-by-Step: Sending Your Donation</h2>
+      <div style="background: var(--bg-dark); border-left: 4px solid orange; padding: 10px; padding-left: 1.3rem; margin-top: 15px; border-radius: 4px; border: 1px solid var(--border);">
+      <p style="color: orange !important;">
+        <b>Notice: TRX Network Fees (Gas)</b><br>
+        Every TRX transaction requires a small network fee, called gas. This fee pays for processing your transaction on the blockchain.<br><br>
+        <b>What does this mean for you?</b><br>
+        <ul style="list-style-type: disc; padding-left: 20px; margin-top: 10px; color: orange !important;"">
+          <li>The fee is usually very low (often less than 1 TRX), but you must have enough TRX in your wallet to cover both your donation <b>and</b> the fee.</li>
+          <li>To be safe, buy a little more TRX than you plan to send. For example, if you want to donate 2 TRX, consider buying 3 TRX.</li>
+          <li>Your wallet will show the fee before you confirm the transaction.</li>
+        </ul>
+        <b>Note:</b> Coffeez takes no cut from your donation. The only deduction is the TRX network fee, which goes to the blockchain, not Coffeez or the creator.<br>
+      </p>
+    </div>
+      <ol style="padding-left: 20px; margin-top: 10px;">
+        <li>
+          <strong>Get TRX (Tron):</strong>
+          <ul style="list-style-type: circle; padding-left: 20px; margin-top: 10px;">
+            <li>Buy TRX on a trusted crypto exchange (Some wallets also do this)</li>
+            <li>Follow the exchange’s instructions to create an account and purchase TRX.</li>
+            <li>Transfer your TRX to your own wallet app or extension for sending.</li>
+          </ul>
+        </li>
+        <li>
+          <strong>Go to the Creator’s Coffeez page:</strong>
+          <ul style="list-style-type: circle; padding-left: 20px; margin-top: 10px;">
+            <li>Find the creator’s link (e.g., <code>https://coffeez.xyz/creatorname</code>).</li>
+            <li>Click <b>Support</b> and choose how many “coffees” you want to buy.</li>
+            <li>Enter your name and an optional message.</li>
+          </ul>
+        </li>
+        <li>
+          <strong>See the payment details:</strong>
+          <ul style="list-style-type: circle; padding-left: 20px; margin-top: 10px;">
+            <li>After submitting, you’ll see a page showing:
+              <ul style="list-style-type: square; padding-left: 20px; margin-top: 10px;">
+                <li>The <b>exact TRX amount</b> to send (e.g., <code>2.0137 TRX</code>)</li>
+                <li>The <b>creator’s wallet address</b> (looks like <code>T...</code>)</li>
+                <li>A timer showing how long you have to complete the donation</li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+        <li>
+          <strong>Send TRX from your wallet:</strong>
+          <ul style="list-style-type: circle; padding-left: 20px; margin-top: 10px;">
+            <li>Open your TRON wallet app or extension.</li>
+            <li>Choose <b>Send</b> or <b>Transfer</b>.</li>
+            <li>Paste the creator’s wallet address into the <b>Recipient</b> field.</li>
+            <li>Enter the <b>exact TRX amount</b> shown on Coffeez. <b>Do not round or change the amount!</b></li>
+            <li>Double-check the address and amount, then confirm/send.</li>
+          </ul>
+          <div style="color: var(--error); margin-bottom: 1rem;">
+            <b>Warning:</b> Only send TRX using the TRON network (TRC20). Sending TRX from other networks (like Ethereum or Binance Smart Chain) will result in lost funds and cannot be recovered.
+          </div>
+        </li>
+        <li>
+          <strong>Wait for confirmation:</strong>
+          <ul style="list-style-type: circle; padding-left: 20px; margin-top: 10px;">
+            <li>Return to the Coffeez page. It will automatically check for your donation every 30 seconds.</li>
+            <li>Once received, you’ll see a <b>Thank You</b> message and your transaction ID.</li>
+          </ul>
+        </li>
+      </ol>
+    </div>
+
+    <div>
+      <h2>Tips & Safety</h2>
+      <ul style="list-style-type: disc; padding-left: 20px; margin-top: 10px;">
+        <li><b>Always send the exact TRX amount shown.</b> This lets Coffeez verify your donation.</li>
+        <li><b>Double-check the wallet address.</b> Crypto transactions cannot be reversed.</li>
+        <li>If the timer expires, <b>do not send TRX</b>. Start a new donation instead.</li>
+        <li>If you need help, <a href="/contact/">contact support</a>.</li>
+      </ul>
+    </div>
+
+    <div>
+      <p style="color: var(--accent);"><strong>Reminder: </strong>All donations are voluntary and final.</p>
+    </div>
+  </div>
+</body>
+{% endblock %}

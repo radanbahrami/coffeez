@@ -1,0 +1,22 @@
+{% extends 'coffeez/base.html' %}
+
+{% block title %}Guides - Coffeez{% endblock %}
+
+{% block content %}
+<body>
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;padding:2rem;">
+    <h1>Guides</h1>
+    <p>Helpful guides to get started with Coffeez and crypto donations.</p>
+
+    <ul style="list-style-type: disc; padding-left: 0; display:inline-block; text-align:left;">
+      {% for g in guides %}
+        <li style="margin:0.25rem 0;"><a href="{{ g.url }}">{{ g.title }}</a></li>
+      {% endfor %}
+    </ul>
+
+    <div style="margin-top: 1rem; color: var(--muted);">
+      <small>If you think another guide would be helpful, <a href="/contact/">contact us</a>.</small>
+    </div>
+  </div>
+</body>
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends 'coffeez/base.html' %}
+
+{% block title %}Guide - Moving funds{% endblock %}
+
+{% block content %}
+<body>
+    <div>
+        <h1>How to Move Funds</h1>
+        <div style="background: var(--bg-dark); border-left: 4px solid var(--accent); padding: 10px; padding-left: 1.3rem; margin-top: 15px; border-radius: 4px; border: 1px solid var(--border);">
+            <p style="color: var(--accent); text-align: center;">
+                <b>Why move your funds?</b> For best security, Coffeez recommends occasionally moving your funds to a new address that you control. This helps protect your assets in case your old private key is ever exposed or compromised.
+            </p>
+        </div>
+        <div>
+            <h2>What You’ll Need</h2>
+            <ul style="list-style-type: disc; padding-left: 20px; margin-top: 10px;">
+                <li>Your <strong>current TRON wallet</strong> and private key</li>
+                <li>A <strong>new TRON-compatible wallet</strong> (mobile app, browser extension, or hardware wallet)</li>
+            </ul>
+        </div>
+        <div>
+            <h2>Step-by-Step: Moving Your Funds</h2>
+            <ol style="padding-left: 20px; margin-top: 10px;">
+                <li>
+                    <strong>Create a new wallet:</strong>
+                    <ul style="list-style-type: circle; padding-left: 20px; margin-top: 10px;">
+                        <li>Download a trusted TRON wallet app or extension.</li>
+                        <li>Follow the instructions to create a new wallet and securely save your new private key or seed phrase.</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>Get your new wallet address:</strong>
+                    <ul style="list-style-type: circle; padding-left: 20px; margin-top: 10px;">
+                        <li>Copy the new wallet’s TRON address (starts with <code>T...</code>).</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>Send your funds:</strong>
+                    <ul style="list-style-type: circle; padding-left: 20px; margin-top: 10px;">
+                        <li>Open your old wallet and choose <b>Send</b>.</li>
+                        <li>Paste your new wallet address as the recipient.</li>
+                        <li>Enter the amount of TRX you want to move (leave a small amount for network fees).</li>
+                        <li>Double-check the address and amount, then confirm/send.</li>
+                        <div style="color: var(--error); margin-bottom: 1rem;">
+                            <b>Warning:</b> Only send TRX using the TRON network (TRC20). Sending TRX from other networks (like Ethereum or Binance Smart Chain) will result in lost funds and cannot be recovered.
+                        </div>
+                    </ul>
+                </li>
+                <li>
+                    <strong>Verify your funds:</strong>
+                    <ul style="list-style-type: circle; padding-left: 20px; margin-top: 10px;">
+                        <li>Open your new wallet and confirm the TRX has arrived.</li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+        <div>
+            <h2>Tips & Safety</h2>
+            <ul style="list-style-type: disc; padding-left: 20px; margin-top: 10px;">
+                <li><b>Always double-check the new wallet address.</b> Crypto transactions cannot be reversed.</li>
+                <li>Keep your new private key or seed phrase safe and never share it.</li>
+            </ul>
+        </div>
+        <div>
+            <p style="color: var(--accent);"><strong>Reminder: </strong>Moving funds to a new wallet is optional but recommended for long-term security.</p>
+        </div>
+    </div>
+</body>
+{% endblock %}

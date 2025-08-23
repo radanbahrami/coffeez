@@ -1,0 +1,91 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Coffeez lets your fans buy you a coffee with crypto. They can support you with TRX and enjoy instant, borderless, and fee-free donations.">
+    <title>{% block title %}Coffeez{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'styles/main.css' %}">
+    <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    {% block extra_head %}{% endblock %}
+    <style>
+        .footer-nav {
+            display: flex;
+            justify-content: center; /* Center horizontally */
+        }
+        .footer-nav a {
+            margin-right: 20px; /* Adjust the spacing between links */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1 class="visually-hidden">Coffeez</h1>
+        <a href="/" class="logo-link">
+            <img src="{% static 'images/cleanwhitelogo.png' %}" alt="Coffeez logo" class="logo" style="height: 48px;">
+        </a>
+        <div class="header-actions">
+            {% if user.is_authenticated %}
+                <a href="{% url 'creator_dashboard' %}" class="join-login-btn">Dashboard</a>
+            {% else %}
+                <a href="/accounts/login/" class="join-login-btn">Login / Join</a>
+            {% endif %}
+        </div>
+        <button class="navbar-toggle" aria-label="Toggle navigation">
+            <i data-lucide="menu" style="width: 32px; height: 32px;"></i>
+        </button>
+    </header>
+    <div class="spacer"></div>
+    
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+    
+    <footer>
+        <div class="footer-nav" style="margin-bottom: 1.5rem;">
+            <a href="/guides/">Guides</a>
+            <a href="/branding/">Branding</a>
+            <a href="/about/">About</a>
+            <a href="/contact/">Contact</a>
+            <a href="/terms/">Terms</a>
+            <a href="/privacy/">Privacy</a>
+        </div>
+        <p style="color: var(--text-muted); margin-bottom: 0.2rem;">Created by <a href="https://radanbahrami.com">Radan Bahrami</a></p>
+        <p style="color: var(--text-muted); margin-top: 0rem; margin-bottom: 0.2rem;">&copy; 2025 Radan Bahrami</p>   
+        <p style="color: var(--text-muted); margin-top: 0rem;">Coffeez and the Coffeez logos are trademarks of Radan Bahrami. All rights reserved.</p>
+    </footer>
+    
+    <script>
+        lucide.createIcons();
+        
+        const header = document.querySelector('header');
+        let lastScroll = window.scrollY;
+
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.scrollY;
+
+            if (currentScroll > lastScroll && currentScroll > 100) {
+                header.classList.add('hide-on-scroll');
+            } else {
+                header.classList.remove('hide-on-scroll');
+            }
+
+            lastScroll = currentScroll;
+        });
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggle = document.querySelector('.navbar-toggle');
+            const nav = document.querySelector('header nav');
+            if (toggle && nav) {
+                toggle.addEventListener('click', () => {
+                    nav.classList.toggle('active');
+                });
+            }
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

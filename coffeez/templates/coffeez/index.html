@@ -1,0 +1,128 @@
+{% extends "coffeez/base.html" %}
+
+{% block title %}Coffeez{% endblock %}
+
+{% block content %}
+<h2 class="hero-title" style="margin-top: 10rem;"><strong>Buy Me a Coffee with Crypto<br>Recieve Support Instantly via Crypto</strong></h2>
+<p style="margin-top: 1rem; color: var(--text-muted); font-size: 1.4rem;">
+    Give your fans an easy way to support you with crypto internationally
+</p>
+<div style="text-align: center; margin-top: 2rem; color: var(--text-muted); font-size: 1rem;">
+    <a href="/accounts/login/" class="start-earning-btn">Get Started</a>
+    <p style="margin-top: 1rem; margin-bottom: 0.25rem; color: var(--text-muted); font-size: 1rem;">
+        It is free, simple, and fast.
+    </p>
+    See <a href="/radanbahrami"><u>live example</u></a>
+</div>
+<h2 class="why-title"><strong>What is Coffeez?</strong></h2>
+<p style="margin-top: 1rem; color: var(--text-muted); font-size: 1.4rem;">
+    Coffeez is a platform that allows your fans to support you by buying you metaphorical "coffees", using cryptocurrency.
+</p>
+<section class="benefits-grid">
+    <div class="benefit-card">
+        <i data-lucide="earth" stroke-width="3"></i>
+        <div class="benefit-title"><b>Global & Borderless</b></div>
+        <div class="benefit-description">Anyone can support you, no matter where they are</div>
+    </div>
+    <div class="benefit-card">
+        <i data-lucide="dollar-sign" stroke-width="3"></i>
+        <div class="benefit-title"><b>Instant Payouts</b></div>
+        <div class="benefit-description">Get paid instantly directly to your own wallet</div>
+    </div>
+    <div class="benefit-card">
+        <i data-lucide="percent" stroke-width="3"></i>
+        <div class="benefit-title"><b>Zero Platform Fees</b></div>
+        <div class="benefit-description">Keep what you earn, we don't take a cut</div>
+    </div>
+    <div class="benefit-card">
+        <i data-lucide="shield" stroke-width="3"></i>
+        <div class="benefit-title"><b>Secure Funds</b></div>
+        <div class="benefit-description">We never touch or store your crypto</div>
+    </div>
+</section>
+<section class="faq-section" id="faq-section">
+    <h2>Frequently Asked Questions</h2>
+    <div id="faq-list">
+        <div class="faq-item">
+            <div class="faq-question"><b>How can I trust Coffeez?</b></div>
+            <div class="faq-answer">
+                Coffeez is open-source and uses a non-custodial system. That means we never have access to your funds or private keys. You can review the code on GitHub and see exactly how Coffeez works. Your wallet stays in your control, always.
+            </div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question"><b>What does non-custodial mean?</b></div>
+            <div class="faq-answer">
+                Non-custodial means Coffeez never has access to your wallet's private key. That key is what allows access to your crypto funds. All payments go directly from the sender to the recipient's wallet, without being held by us.
+            </div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question"><b>What crypto is used?</b></div>
+            <div class="faq-answer">
+                Coffeez uses TRX (Tron) because of its low transaction fees, fast confirmations, and reliable blockchain infrastructure.
+            </div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question"><b>Why not Bitcoin or Ethereum?</b></div>
+            <div class="faq-answer">
+                Bitcoin and Ethereum are great, but they have higher transaction fees and slower confirmation times. That makes them less suitable for small, frequent payments like digital donations or tips.
+            </div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question"><b>Are there any fees?</b></div>
+            <div class="faq-answer">
+                Coffeez charges zero platform fees. The only cost is the small network (gas) fee required by the Tron blockchain to process your transaction.
+            </div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question"><b>Do I need a wallet to use Coffeez?</b></div>
+            <div class="faq-answer">
+                No. We will create a wallet for you using our secure API. However, we recommend that you occasionally transfer your funds to a personal wallet for better security and long-term storage.
+            </div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question"><b>Can anyone become a Coffeez member?</b></div>
+            <div class="faq-answer">
+                Yes, anyone can join Coffeez, as long as they follow our Terms of Service. Creators must not use the platform for illegal or explicit activity, including but not limited to money laundering, scams, adult content, or anything that violates local laws. Read more<br><br>
+                We reserve the right to suspend accounts that break these rules.
+            </div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question"><b>Who is behind Coffeez?</b></div>
+            <div class="faq-answer">
+                Coffeez is developed and maintained by Radan Bahrami. You can learn more about us on the <a href="/about">about</a> page.
+            </div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question"><b>Is it free?</b></div>
+            <div class="faq-answer">
+                Yes. Coffeez is 100% free to use, with no hidden charges.
+            </div>
+        </div>
+    </div>
+    <div class="faq-fade"></div>
+    <div id="faq-toggle-btn" class="faq-toggle-icon" style="text-align:center; cursor:pointer; margin-top:1rem;">
+        <i id="faq-arrow" data-lucide="chevron-down" style="width:32px;height:32px;"></i>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const faqSection = document.getElementById('faq-section');
+    const faqBtn = document.getElementById('faq-toggle-btn');
+    
+    // Start with the FAQ section collapsed
+    faqSection.classList.add('collapsed');
+
+    faqBtn.addEventListener('click', function() {
+        faqSection.classList.toggle('collapsed');
+        const isCollapsed = faqSection.classList.contains('collapsed');
+        
+        const arrow = document.querySelector('#faq-arrow');
+        if (arrow) {
+            arrow.style.transform = isCollapsed ? 'rotate(0deg)' : 'rotate(180deg)';
+            arrow.style.transition = 'transform 0.3s ease';
+        }
+    });
+</script>
+{% endblock %}

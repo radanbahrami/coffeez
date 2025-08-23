@@ -1,0 +1,161 @@
+{% extends "coffeez/base.html" %}
+{% load static %}
+{% load socialaccount %}
+
+{% block title %}Login{% endblock %}
+
+{% block extra_head %}
+<style>
+.h-captcha {
+    margin-bottom: -2rem !important;
+}
+.tos-checkbox-container input[type="checkbox"] {
+  margin-top: 2px;
+  accent-color: var(--accent);
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+.tos-checkbox-container label {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  text-align: left;
+  line-height: 1.5;
+  margin: 0;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<h1 class="join-login-title" id="form-title">Login</h1>
+<p style="text-align: center; margin-bottom: 1rem;" id="form-desc">
+    Sign in with your email and password.
+</p>
+<div style="display: flex; justify-content: center; align-items: center; flex-direction: column;">
+    {% if error %}
+    <div style="color: var(--error); margin-bottom: 1rem; text-align: center; font-size: 1rem;">
+        {{ error }}
+    </div>
+    {% endif %}
+    {% if messages %}
+    <div>
+        {% for message in messages %}
+            <p style="color: var(--error); margin-top: 0; margin-bottom: 1rem; text-align: center; font-size: 1rem;"">{{ message }}</p>
+        {% endfor %}
+    </div>
+    {% endif %}
+    <form method="POST" action="/email-login/" style="margin-bottom: 1rem;" id="email-login-form">
+        {% csrf_token %}
+        <input type="hidden" name="mode" id="form-mode" value="login">
+        <input type="email" name="email" placeholder="Email" required style="margin-bottom: 0.5rem; padding: 0.5rem; width: 20rem;">
+        <input type="password" name="password" placeholder="Password" required style="margin-bottom: 0.5rem; padding: 0.5rem; width: 20rem;">
+        <div class="h-captcha" data-sitekey="f2d2a10e-ad0e-4db0-9226-6d5c360c3128" data-theme="dark"></div>
+        <!-- TOS Checkbox (styled like creator_profile.html) -->
+        <div class="tos-checkbox-container" style="margin: 24px 0 12px 0; display: flex; align-items: flex-start; justify-content: center; gap: 8px; max-width: 480px; margin-left: auto; margin-right: auto;">
+            <input type="checkbox" id="tosCheckbox">
+            <label for="tosCheckbox" style="font-size: 0.95rem; color: var(--text-muted); cursor: pointer; text-align: left; line-height: 1.5; margin: 0;">
+                I accept the <a href="/terms" target="_blank" style="color:var(--accent);text-decoration:underline;">Terms of Service</a> and <a href="/privacy" target="_blank" style="color:var(--accent);text-decoration:underline;">Privacy Policy</a>.
+            </label>
+        </div>
+        <button type="submit" class="join-login-btn" id="submit-btn" style="width: 13rem !important; margin-bottom: -3rem;">Login</button>
+        <div id="lsError" style="margin-top:10px; color: var(--error); font-size: 0.98rem; min-height: 22px; display: flex; justify-content: center; align-items: center; text-align: center;"></div>
+        <div id="forgot-password" style="text-align: center; margin-top: 0; margin-bottom: 0; display: none;">
+            <a href="/contact/" style="color: var(--accent); text-decoration: underline;">Forgot password?</a>
+        </div>
+    </form>
+    <div id="toggle-signup" style="margin-bottom: 1rem;">
+        <span id="toggle-text">Don't have an account?</span>
+        <a href="#" id="toggle-link">Create one</a>
+    </div>
+    <p style="margin-bottom: 1rem;">OR</p>
+    <a href="{% provider_login_url 'google' %}">
+        <img src="{% static 'images/web_dark_sq_ctn@2x.png' %}" alt="Continue with Google" style="all: unset; height:48px;">
+    </a>
+</div>
+<p style="font-size: 0.8rem; color: #888; text-align:center; margin-top: 1rem;">
+    By continuing with Google, you agree to our <a href="/terms">Terms of Service</a> and <a href="/privacy">Privacy Policy</a>.
+</p>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        lucide.createIcons();
+        const toggle = document.querySelector('.navbar-toggle');
+        const nav = document.querySelector('header nav');
+        toggle.addEventListener('click', () => {
+            nav.classList.toggle('active');
+        });
+
+        // Check URL parameters to determine initial mode
+        const urlParams = new URLSearchParams(window.location.search);
+        const mode = urlParams.get('mode');
+        
+        // Initialize form elements
+        const toggleLink = document.getElementById('toggle-link');
+        const formTitle = document.getElementById('form-title');
+        const formDesc = document.getElementById('form-desc');
+        const submitBtn = document.getElementById('submit-btn');
+        const formMode = document.getElementById('form-mode');
+        const toggleText = document.getElementById('toggle-text');
+        const forgotPassword = document.getElementById('forgot-password');
+        let isSignup = mode === 'signup';
+
+        // Set initial state based on URL parameter
+        if (isSignup) {
+            formTitle.textContent = 'Sign Up';
+            formDesc.textContent = 'Create an account with your email and password.';
+            submitBtn.textContent = 'Sign Up';
+            formMode.value = 'signup';
+            toggleText.textContent = 'Already have an account?';
+            toggleLink.textContent = 'Login';
+        } else {
+            forgotPassword.style.display = 'block';
+        }
+
+        // Toggle between Login and Sign Up modes
+        toggleLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (isSignup) {
+                window.location.href = '/accounts/login?mode=login';
+            } else {
+                window.location.href = '/accounts/login?mode=signup';
+            }
+        });
+    });
+
+    (function () {
+        const form = document.getElementById('email-login-form');
+        if (!form) return;
+
+        form.addEventListener('submit', function (e) {
+            const hcaptchaInput = document.querySelector('[name="h-captcha-response"]');
+            const hcaptchaResponse = hcaptchaInput ? (hcaptchaInput.value || '').trim() : '';
+            const tosCheckbox = document.getElementById('tosCheckbox');
+            // Prefer a dedicated supportError element, fall back to lsError if present
+            const supportError = document.getElementById('supportError') || document.getElementById('lsError');
+
+            if (supportError) supportError.textContent = '';
+
+            if (!tosCheckbox || !tosCheckbox.checked) {
+                e.preventDefault();
+                if (supportError) {
+                    supportError.textContent = 'You must accept the Terms of Service and Privacy Policy before continuing.';
+                } else {
+                    // final fallback for very old browsers or missing nodes
+                    alert('You must accept the Terms of Service and Privacy Policy before continuing.');
+                }
+                return false;
+            }
+
+            if (!hcaptchaResponse) {
+                e.preventDefault();
+                alert('Please complete the captcha verification.');
+                return false;
+            }
+        });
+    })();
+</script>
+<script src="https://hcaptcha.com/1/api.js" async defer></script>
+{% endblock %}

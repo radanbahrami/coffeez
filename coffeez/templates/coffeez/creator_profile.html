@@ -1,0 +1,340 @@
+{% extends "coffeez/base.html" %}
+{% load static %}
+
+{% block title %}Coffeez - {{ creator.username }}{% endblock %}
+
+{% block extra_head %}
+<style>
+  .profile-picture {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: var(--bg-dark); /* Optional: neutral bg for placeholder */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+@media (max-width: 768px) {
+  .buyacoffee {
+    font-size: 1.3rem;
+  }
+}
+.tos-checkbox-container {
+  margin: 24px 0 12px 0;
+  display: flex;
+  align-items: flex-start; /* changed from center to flex-start for better alignment */
+  justify-content: center;
+  gap: 8px; /* add gap for spacing */
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.tos-checkbox-container input[type="checkbox"] {
+  margin-top: 2px; /* aligns checkbox with label text */
+  accent-color: var(--accent);
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+.tos-checkbox-container label {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  text-align: left;
+  line-height: 1.5;
+  margin: 0;
+}
+#supportError {
+  margin-top:10px;
+  color: var(--error);
+  font-size: 0.98rem;
+  min-height: 22px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="height: 2rem;"></div>
+{% if creator.profile_picture %}
+  <img src="{{ creator.get_profile_picture_url }}"
+       alt="{{ creator.display_name }}'s Profile Picture" 
+       class="profile-picture"
+       onerror="this.style.display='none';document.getElementById('no-profile-pic-fallback').style.display='flex';">
+  <div id="no-profile-pic-fallback" class="no-profile-pic profile-picture" style="display:none;">
+    <i data-lucide="user-round" style="height: 100px; width: 100px; margin-bottom: -2rem;"></i>
+  </div>
+{% else %}
+  <div class="no-profile-pic profile-picture">
+    <i data-lucide="user-round" style="height: 100px; width: 100px; margin-bottom: -2rem;"></i>
+  </div>
+{% endif %}
+  <h1 style="text-align: center;">
+    <div class="displayname">{{ creator.display_name }}
+    {% if creator.verified %}
+      <span class="verified-badge-wrapper" style="position: relative;">
+        <i 
+          data-lucide="badge-check" 
+          style="color: #1DA1F2; vertical-align: middle; margin-right: 0.3em; height: 32px; width: 32px; margin-bottom: 0.5rem;"
+          title="Verified Creator"
+          tabindex="0"
+          aria-label="Verified Creator"
+        ></i>
+        <span class="verified-tooltip" style="display:none; position:absolute; left:110%; top:50%; transform:translateY(-50%); background:#222; color:#1DA1F2; padding:4px 8px; border-radius:4px; font-size:14px; white-space:nowrap; z-index:10;">
+          This creator is verified.
+        </span>
+        <span class="verified-tooltip-mobile" style="display:none; position:fixed; left:50%; top:50%; transform:translate(-50%,-50%); background:#222; color:#1DA1F2; padding:10px 20px; border-radius:8px; font-size:18px; white-space:nowrap; z-index:9999;">
+          This creator is verified.
+        </span>
+      </span>
+    </div>
+    {% endif %}
+  </h1>
+  <h1 style="text-align: center; font-size: 20px; color: var(--text-muted); margin-top: -1.5rem;">@{{ creator.username }}</h1>
+{% if creator.bio %}
+  <p style="text-align: center;">{{ creator.bio }}</p>
+{% endif %}
+
+<div class="sections-container">
+  <section class="buy-coffee-section">
+    <h2 id="buy-coffee-heading" style="display: flex; align-items: center; gap: 0.5rem;">
+      <span class="buyacoffee">Buy {{ creator.username }} a Coffee</span>
+      <span style="position: relative; display: flex; align-items: center;">
+        <span style="display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; background: none; border: none; cursor: pointer; position: relative;" tabindex="0" aria-label="Info" class="info-circle">
+          <i data-lucide="info" style="width: 20px; height: 20px; color: var(--accent); border: none;"></i>
+        </span>
+        <span class="info-tooltip" style="display:none; position:absolute; left:110%; top:50%; transform:translateY(-50%); background:#222; color:#fff; padding:6px 12px; border-radius:6px; font-size:15px; white-space:nowrap; z-index:10; box-shadow:0 2px 8px rgba(0,0,0,0.15);">
+          Not real coffee, just a metaphor. Each coffee is $3.
+        </span>
+        <span class="info-tooltip-mobile" style="display:none; position:fixed; left:50%; top:50%; transform:translate(-50%,-50%); background:#222; color:#fff; padding:10px 20px; border-radius:8px; font-size:0.8rem; white-space:nowrap; z-index:9999; box-shadow:0 2px 8px rgba(0,0,0,0.15);">
+          Not real coffee, just a metaphor. Each coffee is $3.
+        </span>
+      </span>
+    </h2>
+
+      <div style="text-align: center; margin-top: -1rem; margin-bottom: 1rem;">
+        <small style="color: var(--text-muted);">
+          New to crypto? <a href="/guides/supporting/" style="color: var(--accent); text-decoration: underline;">Learn how to support creators</a>
+        </small>
+      </div>
+
+    {# Display errors via Django messages #}
+    {% if messages %}
+      <div>
+        {% for message in messages %}
+          <p style="color: var(--error); margin-top: 0; margin-bottom: 1rem; text-align: center; font-size: 1rem;">{{ message }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <form id="coffee-form" method="post">
+      {% csrf_token %}
+      <div id="name-input-container">
+        <label for="buyer-name">Your Name</label>
+        <input type="text" id="buyer-name" name="buyer_name" value="{{ buyer_name|default:'' }}" required>
+      </div>
+      <div id="message-input-container" style="margin-bottom: 1rem;">
+        <label for="buyer-message">Message</label>
+        <textarea id="buyer-message" name="buyer_message" placeholder="Write a message to {{ creator.display_name }}..."></textarea>
+        <small style="color: var(--text-muted); display: block; margin-top: 0.4rem; margin-left: 1rem; text-align: left;">This message will be shown publicly.</small>
+      </div>
+      <div id="coffee-amount-container">
+        <label for="coffee-qty">Coffees</label>
+        <div id="coffee-selection">
+          <div id="coffee-icons">
+            <img class="coffee-icon" data-value="1" src="{% static 'images/cleanwhitelogo.png' %}" alt="Coffee" width="32" height="32">
+            <img class="coffee-icon" data-value="2" src="{% static 'images/cleanwhitelogo.png' %}" alt="Coffee" width="32" height="32">
+            <img class="coffee-icon" data-value="3" src="{% static 'images/cleanwhitelogo.png' %}" alt="Coffee" width="32" height="32">
+            <img class="coffee-icon" data-value="4" src="{% static 'images/cleanwhitelogo.png' %}" alt="Coffee" width="32" height="32">
+            <img class="coffee-icon" data-value="5" src="{% static 'images/cleanwhitelogo.png' %}" alt="Coffee" width="32" height="32">
+          </div>
+          <input type="number" id="coffee-qty" name="coffee_qty" min="1" max="50" value="{{ coffee_qty|default:1 }}" required>
+        </div>
+        <p id="conversion"></p>
+      </div>
+      <div class="h-captcha" data-sitekey="f2d2a10e-ad0e-4db0-9226-6d5c360c3128" data-theme="dark"></div>
+      <!-- TOS Checkbox -->
+      <div class="tos-checkbox-container">
+        <input type="checkbox" id="tosCheckbox">
+        <label for="tosCheckbox">
+          I accept the <a href="/terms" target="_blank" style="color:var(--accent);text-decoration:underline;">Terms of Service</a> and <a href="/privacy" target="_blank" style="color:var(--accent);text-decoration:underline;">Privacy Policy</a> and understand my payment is non-refundable.
+        </label>
+      </div>
+      <button type="submit">Support</button>
+      <div id="supportError"></div>
+    </form>
+  </section>
+  <section class="supporters-section">
+    <h2 id="supporters-heading">Latest Supporters</h2>
+    {% if supporters %}
+      <ul>
+        {% for supporter in supporters %}
+          <li>
+            <strong>{{ supporter.buyer_name }}</strong> - 
+            {{ supporter.coffee_qty }} coffee{{ supporter.coffee_qty|pluralize }} 
+            <time datetime="{{ supporter.timestamp|date:'c' }}">{{ supporter.timestamp|date:'F j, Y' }}</time>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>No supporters yet. Be the first to support!</p>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Info icon tooltip logic
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.info-circle').forEach(function(circle) {
+      const tooltip = circle.parentElement.querySelector('.info-tooltip');
+      const tooltipMobile = circle.parentElement.querySelector('.info-tooltip-mobile');
+      let hideTimeout;
+      circle.addEventListener('mouseenter', function() {
+        if (!window.matchMedia('(pointer: coarse)').matches) {
+          tooltip.style.display = 'block';
+        }
+      });
+      circle.addEventListener('mouseleave', function() {
+        tooltip.style.display = 'none';
+      });
+      circle.addEventListener('focus', function() {
+        if (!window.matchMedia('(pointer: coarse)').matches) {
+          tooltip.style.display = 'block';
+        }
+      });
+      circle.addEventListener('blur', function() {
+        tooltip.style.display = 'none';
+      });
+      // Mobile tap
+      circle.addEventListener('touchstart', function(e) {
+        e.preventDefault();
+        if (window.matchMedia('(pointer: coarse)').matches) {
+          tooltipMobile.style.display = 'block';
+          clearTimeout(hideTimeout);
+          hideTimeout = setTimeout(() => { tooltipMobile.style.display = 'none'; }, 2000);
+        } else {
+          tooltip.style.display = 'block';
+          clearTimeout(hideTimeout);
+          hideTimeout = setTimeout(() => { tooltip.style.display = 'none'; }, 2000);
+        }
+      });
+      // Also show on click for accessibility
+      circle.addEventListener('click', function(e) {
+        if (window.matchMedia('(pointer: coarse)').matches) {
+          tooltipMobile.style.display = 'block';
+          clearTimeout(hideTimeout);
+          hideTimeout = setTimeout(() => { tooltipMobile.style.display = 'none'; }, 2000);
+        } else {
+          tooltip.style.display = 'block';
+          clearTimeout(hideTimeout);
+          hideTimeout = setTimeout(() => { tooltip.style.display = 'none'; }, 2000);
+        }
+      });
+    });
+  });
+  const coffeePrice = 3; // $3 per coffee
+  const coffeeQtyInput = document.getElementById('coffee-qty');
+  const conversionText = document.getElementById('conversion');
+  const coffeeIcons = document.querySelectorAll('.coffee-icon');
+
+  // Function to update the coffee icons based on the selected quantity
+  function updateCoffeeIcons(qty) {
+    coffeeIcons.forEach((icon, index) => {
+      if (index < qty) {
+        icon.classList.add('selected');
+      } else {
+        icon.classList.remove('selected');
+      }
+    });
+  }
+
+  // Update conversion text and coffee icons when input changes
+  coffeeQtyInput.addEventListener('input', function () {
+    const qty = parseInt(this.value) || 0;
+    conversionText.innerText = `${qty} coffees = $${qty * coffeePrice}`;
+    updateCoffeeIcons(qty);
+    // Save selected quantity to localStorage
+    localStorage.setItem('selectedCoffeeQty', qty);
+  });
+
+  // Update input value and coffee icons when coffee icons are clicked
+  coffeeIcons.forEach((icon, index) => {
+    icon.addEventListener('click', function () {
+      const value = index + 1;
+      coffeeQtyInput.value = value;
+      conversionText.innerText = `${value} coffees = $${value * coffeePrice}`;
+      updateCoffeeIcons(value);
+      // Save selected quantity to localStorage
+      localStorage.setItem('selectedCoffeeQty', value);
+    });
+  });
+
+  // On page load, restore selected quantity from localStorage if available
+  const savedQty = parseInt(localStorage.getItem('selectedCoffeeQty'));
+  const initialQty = !isNaN(savedQty) && savedQty > 0 ? savedQty : (parseInt(coffeeQtyInput.value) || 1);
+  coffeeQtyInput.value = initialQty;
+  updateCoffeeIcons(initialQty);
+  conversionText.innerText = `${initialQty} coffee${initialQty !== 1 ? 's' : ''} = $${initialQty * coffeePrice}`;
+
+  // Mobile tap tooltip for verified badge
+  document.querySelectorAll('.verified-badge-wrapper').forEach(function(wrapper) {
+    const icon = wrapper.querySelector('[data-lucide="badge-check"]');
+    const tooltip = wrapper.querySelector('.verified-tooltip');
+    const tooltipMobile = wrapper.querySelector('.verified-tooltip-mobile');
+    let hideTimeout;
+
+    // Desktop hover
+    icon.addEventListener('mouseenter', function() {
+      tooltip.style.display = 'block';
+    });
+    icon.addEventListener('mouseleave', function() {
+      tooltip.style.display = 'none';
+    });
+    icon.addEventListener('focus', function() {
+      tooltip.style.display = 'block';
+    });
+    icon.addEventListener('blur', function() {
+      tooltip.style.display = 'none';
+    });
+
+    // Mobile tap
+    icon.addEventListener('touchstart', function(e) {
+      e.preventDefault();
+      tooltipMobile.style.display = 'block';
+      clearTimeout(hideTimeout);
+      hideTimeout = setTimeout(() => { tooltipMobile.style.display = 'none'; }, 2000);
+    });
+
+    // Also show on click for accessibility
+    icon.addEventListener('click', function(e) {
+      if (window.matchMedia("(pointer: coarse)").matches) {
+        tooltipMobile.style.display = 'block';
+        clearTimeout(hideTimeout);
+        hideTimeout = setTimeout(() => { tooltipMobile.style.display = 'none'; }, 2000);
+      } else {
+        tooltip.style.display = 'block';
+        clearTimeout(hideTimeout);
+        hideTimeout = setTimeout(() => { tooltip.style.display = 'none'; }, 2000);
+      }
+    });
+  });
+  document.getElementById('coffee-form').addEventListener('submit', function (e) {
+    const hcaptchaResponse = document.querySelector('[name="h-captcha-response"]').value;
+    const tosCheckbox = document.getElementById('tosCheckbox');
+    const supportError = document.getElementById('supportError');
+    supportError.textContent = '';
+    if (!tosCheckbox.checked) {
+      e.preventDefault();
+      supportError.textContent = 'You must accept the Terms of Service and Privacy Policy before supporting.';
+      return false;
+    }
+  });
+</script>
+<script src="https://hcaptcha.com/1/api.js" async defer></script>
+{% endblock %}

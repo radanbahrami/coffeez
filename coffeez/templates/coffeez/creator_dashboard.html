@@ -1,0 +1,1041 @@
+{% extends 'coffeez/base.html' %}
+{% load static %}
+
+{% block title %}Coffeez Dashboard{% endblock %}
+
+{% block extra_head %}
+<meta name="robots" content="noindex, nofollow">
+{% endblock %}
+
+{% block content %}
+<style>
+    .profile-pic-buttons .glass-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.25rem;
+    }
+    
+    .profile-pic-buttons .glass-btn i {
+        margin-right: 0;
+    }
+    
+    .editable-section {
+        position: relative;
+    }
+    
+    .edit-toggle {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        color: white;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 4px;
+        padding: 0.25rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .edit-toggle:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+    
+    .editable-content {
+        margin-bottom: 1rem;
+        display: flex;
+        justify-content: center;
+    }
+    
+    .edit-form {
+        display: none;
+        text-align: center;
+    }
+    
+    .edit-input, .edit-textarea, .display-name-container, .bio-name-container, .link-section-container {
+        width: 20rem;
+        padding: 0.75rem;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--bg-dark);
+        color: var(--text-primary);
+        font-size: 0.95rem;
+        margin-bottom: 0.5rem;
+        resize: vertical;
+    }
+    
+    .edit-input:focus, .edit-textarea:focus {
+        border-color: var(--accent);
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(255,255,255,0.1);
+    }
+    
+    .edit-actions {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: flex-end;
+    }
+    
+    .edit-actions button {
+        padding: 0.5rem 1rem;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        background: var(--surface);
+        color: var(--text-primary);
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .edit-actions .save-btn {
+        background: var(--accent);
+        color: #000;
+        border-color: var(--accent);
+    }
+    
+    .edit-actions button:hover {
+        background: var(--hover);
+    }
+    
+    .edit-actions .save-btn:hover {
+        opacity: 0.9;
+    }
+
+    #bio-view div,
+    #bio-view div p {
+        color: white !important;
+        text-align: left !important;
+        margin: 0 !important;
+        padding: 0.75 !important;
+    }
+
+    /* Center the wallet display */
+    .wallet-display, .email-display {
+        display: flex;
+        justify-content: center;
+    }
+
+    .wallet-address, .email-address {
+        width: 20rem;
+        padding: 0.75rem;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--bg-dark);
+        color: var(--text-primary);
+        font-size: 0.95rem;
+        font-family: 'Courier New', monospace;
+        word-break: break-all;
+        text-align: center;
+    }
+
+    /* Modal overlay and popup styles */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(5px);
+        z-index: 1000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-overlay.show {
+        display: flex;
+    }
+
+    .supporter-details {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 2rem;
+        max-width: 500px;
+        width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        position: relative;
+        animation: modalSlideIn 0.3s ease-out;
+    }
+
+    @keyframes modalSlideIn {
+        from {
+            opacity: 0;
+            transform: scale(0.9) translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+    }
+
+    .modal-close {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+    }
+
+    .modal-close:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--text-primary);
+    }
+
+    .supporter-details h4 {
+        margin: 0 0 1.5rem 0;
+        color: var(--text-primary);
+        font-size: 1.5rem;
+        font-weight: 600;
+        padding-right: 2rem;
+    }
+
+    .supporter-details .detail-row {
+        margin-bottom: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .supporter-details .detail-row:last-of-type {
+        border-bottom: none;
+    }
+
+    .supporter-details .detail-label {
+        color: var(--text-muted);
+        font-size: 1rem;
+        font-weight: 500;
+    }
+
+    .supporter-details .detail-value {
+        color: var(--text-primary);
+        font-weight: 600;
+        font-size: 1rem;
+    }
+
+    .supporter-message {
+        margin-top: 1.5rem;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+        border-left: 4px solid var(--accent);
+    }
+
+    .supporter-message .message-label {
+        color: var(--text-muted);
+        font-size: 1rem;
+        font-weight: 500;
+        margin-bottom: 0.75rem;
+    }
+
+    .supporter-message .message-text {
+        color: var(--text-primary);
+        line-height: 1.5;
+        font-size: 1rem;
+    }
+
+    .no-message {
+        color: var(--text-muted);
+        font-style: italic;
+        font-size: 1rem;
+    }
+
+    @media (max-width: 768px) {
+        .dashboard-container {
+            padding: 1rem;
+        }
+        
+        .dashboard-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+        
+        .dashboard-card {
+            min-width: 0;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .edit-input, .edit-textarea, .display-name-container, .bio-name-container, .link-section-container {
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .wallet-address, .email-address {
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .link-section {
+            display: flex;
+            justify-content: flex-start;
+            gap: 1rem;
+        }
+        
+        .link-buttons {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-start !important;
+            margin-left: 1rem;
+            margin-top: -1rem;
+        }
+        
+        .profile-pic-buttons {
+            flex-direction: row;
+            justify-content: center;
+            gap: 1rem;
+        }
+        
+        .edit-actions {
+            flex-wrap: wrap;
+        }
+        
+        .edit-actions button {
+            flex: 1;
+            min-width: 80px;
+        }
+        
+        .supporters-section {
+            margin-top: 2rem;
+            padding: 0 1rem;
+        }
+        
+        .supporter-item {
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .supporter-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .supporter-name, .supporter-amount, .supporter-time {
+            overflow-wrap: break-word;
+            word-break: break-word;
+        }
+
+        .supporter-details {
+            right: -1rem;
+            left: -1rem;
+            min-width: auto;
+            max-width: calc(100vw - 2rem);
+        }
+    }
+
+    /* Remove old dropdown styles */
+    .supporter-menu {
+        position: relative;
+        display: inline-block;
+    }
+
+    .supporter-menu-btn {
+        background: none;
+        border: none;
+        color: var(--text-primary);
+        cursor: pointer;
+        padding: 0;
+        border-radius: 0;
+        transition: color 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: auto;
+        height: auto;
+    }
+
+    .supporter-menu-btn:hover {
+        color: var(--accent);
+        background: none;
+    }
+
+    .supporter-menu-btn:focus {
+        outline: none;
+        color: var(--accent);
+    }
+</style>
+<div class="dashboard-container">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h1>Dashboard</h1>
+            <p class="welcome-text">Welcome back, {{ creator.display_name }}!</p>
+        </div>
+        <form method="post" action="{% url 'account_logout' %}" style="margin-left: 2rem;">
+            {% csrf_token %}
+            <button type="submit" class="glass-btn" style="background: var(--accent); color: #000; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer;">
+                <i data-lucide="log-out" style="margin-right: 0.5rem;"></i>Logout
+            </button>
+        </form>
+    </div>
+    
+    <div class="dashboard-grid">
+        <!-- Profile Picture Section -->
+        <div class="dashboard-card">
+            <h3>Profile Picture</h3>
+            <div class="profile-pic-section">
+                <div class="current-profile-pic">
+                    {% if creator.profile_picture %}
+                        <img src="{{ creator.get_profile_picture_url }}" 
+                             alt="Current profile picture" 
+                             class="dashboard-profile-pic">
+                    {% else %}
+                        <div class="no-profile-pic">
+                            <i data-lucide="user-round" style="height: 100px; width: 100px; margin-bottom: -2rem;"></i>
+                        </div>
+                    {% endif %}
+                </div>
+                <form id="profile-pic-form" enctype="multipart/form-data" class="profile-pic-form">
+                    {% csrf_token %}
+                    <input type="file" 
+                           id="profile-pic-input" 
+                           name="profile_picture" 
+                           accept="image/jpeg,image/jpg,image/png"
+                           style="display: none;">
+                    <div class="profile-pic-buttons">
+                        <button type="button" 
+                                onclick="document.getElementById('profile-pic-input').click()" 
+                                class="glass-btn">
+                            <i data-lucide="upload"></i>
+                            {% if creator.profile_picture %}Change{% else %}Upload{% endif %}
+                        </button>
+                        {% if creator.profile_picture %}
+                            <button type="button" 
+                                    onclick="removeProfilePic()" 
+                                    class="glass-btn remove-btn">
+                                <i data-lucide="trash-2"></i>
+                                Remove
+                            </button>
+                        {% endif %}
+                    </div>
+                </form>
+                <div id="upload-status" class="upload-status" style="display: none;"></div>
+            </div>
+            <p class="card-description">Upload a profile picture (Max 512KB, JPG/PNG only)</p>
+        </div>
+
+        <!-- Your Link Section -->
+        <div class="dashboard-card">
+            <h3>Your Coffeez Link</h3>
+            <div class="link-section">
+                <input type="text" 
+                       value="https://coffeez.xyz/{{ creator.username }}" 
+                       readonly 
+                       id="creator-link"
+                       class="link-section-container"
+                       style="background: var(--bg-dark); padding: 1rem; color: var(--text-primary); font-family: 'Courier New', monospace; word-break: break-all;">
+                <div class="link-buttons">
+                    <button type="button" onclick="copyToClipboard('creator-link')" title="Copy link" class="glass-btn">
+                        <i data-lucide="copy"></i>
+                    </button>
+                    <button type="button" onclick="openCreatorLink()" title="View your page" class="glass-btn">
+                        <i data-lucide="eye"></i>
+                    </button>
+                </div>
+            </div>
+            <p class="card-description">Share this link to receive donations</p>
+        </div>
+
+        <!-- Display Name Section -->
+        <div class="dashboard-card editable-section">
+            <h3>Display Name</h3>
+            <button class="edit-toggle" onclick="toggleEdit('display-name')" title="Edit display name">
+                <i data-lucide="pencil" style="width: 16px; height: 16px;"></i>
+            </button>
+            
+            <div id="display-name-view" class="editable-content">
+                <div class="display-name-container">
+                    {{ creator.display_name }}
+                </div>
+            </div>
+            
+            <div id="display-name-edit" class="edit-form">
+                <input type="text" 
+                       id="display-name-input" 
+                       class="edit-input" 
+                       value="{{ creator.display_name }}"
+                       maxlength="100"
+                       placeholder="Your display name">
+                <div class="edit-actions">
+                    <button type="button" onclick="cancelEdit('display-name')">Cancel</button>
+                    <button type="button" class="save-btn" onclick="saveDisplayName()">Save</button>
+                </div>
+            </div>
+            
+            <div id="display-name-status" class="upload-status" style="display: none;"></div>
+        </div>
+
+        <!-- Bio Section -->
+        <div class="dashboard-card editable-section">
+            <h3>Bio</h3>
+            <button class="edit-toggle" onclick="toggleEdit('bio')" title="Edit bio">
+                <i data-lucide="pencil" style="width: 16px; height: 16px;"></i>
+            </button>
+            
+            <div id="bio-view" class="editable-content">
+                <div class="bio-name-container">
+                    {% if creator.bio %}
+                        {{ creator.bio|linebreaks }}
+                    {% else %}
+                        <span style="color: var(--text-muted); font-style: italic;">No bio added yet</span>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div id="bio-edit" class="edit-form">
+                <textarea id="bio-input" 
+                         class="edit-textarea" 
+                         rows="4"
+                         maxlength="500"
+                         placeholder="Tell supporters about yourself...">{{ creator.bio|default:"" }}</textarea>
+                <div style="text-align: right; margin-bottom: 0.5rem;">
+                    <small style="color: var(--text-muted);">
+                        <span id="bio-char-count">{{ creator.bio|length|default:0 }}</span>/500
+                    </small>
+                </div>
+                <div class="edit-actions">
+                    <button type="button" onclick="cancelEdit('bio')">Cancel</button>
+                    <button type="button" class="save-btn" onclick="saveBio()">Save</button>
+                </div>
+            </div>
+            
+            <div id="bio-status" class="upload-status" style="display: none;"></div>
+            
+            <p class="card-description">Tell supporters a bit about yourself</p>
+        </div>
+
+        <!-- Wallet Address Section -->
+        <div class="dashboard-card">
+            <h3>Wallet Address</h3>
+            <div class="wallet-display">
+                <span class="wallet-address">{{ creator.wallet_address }}</span>
+            </div>
+            <p class="card-description" style="margin-bottom: -1rem;">Your TRX wallet for receiving payments<br>This is reference only, please do not send funds directly to this address.</p>
+            <p class="card-description" style="color: #ffc107; margin-bottom: 0.5rem; font-size: 0.9rem;">Has your wallet been lost or compromised? 
+                <a href="javascript:void(0);" onclick="deactivateAccount()" style="color: #ff6b6b; text-decoration: underline;">Deactivate</a> your account temporarily and 
+                <a href="/contact/" style="color: var(--accent); text-decoration: underline;">contact support</a>.
+            </p>
+            <div style="margin-top: 1rem; text-align: center;">
+                <a href="/guides/accessing-funds/" style="color: var(--accent); text-decoration: underline; font-size: 0.9rem;">How to access your funds</a> | 
+                <a href="/guides/moving-funds/" style="color: var(--accent); text-decoration: underline; font-size: 0.9rem;">How to move funds</a>
+            </div>
+        </div>
+
+        <!-- Email Section -->
+        <div class="dashboard-card">
+            <h3>Email</h3>
+            <div class="email-display">
+                <!-- Reuse wallet-address styles for a consistent read-only display -->
+                <span class="email-address" style="text-align: left;">{{ creator.email }}</span>
+            </div>
+        </div>
+
+        <!-- Total Earned Section -->
+        <div class="dashboard-card stat-card">
+            <h3>Total Coffees</h3>
+            <div class="stat-value">{{ total_coffees }}</div>
+            <p class="card-description" style="margin-top: -1.5rem;">≈ ${{ estimated_usd }}</p>
+            <p class="card-description">Total coffees bought by supporters</p>
+        </div>
+
+        <!-- Supporters Count Section -->
+        <div class="dashboard-card stat-card">
+            <h3>Supporters</h3>
+            <div class="stat-value">{{ purchases|length }}</div>
+            <p class="card-description">People who bought you coffee</p>
+        </div>
+    </div>
+
+    <!-- Recent Supporters Section -->
+    <div class="supporters-section">
+        <h2>Recent Supporters</h2>
+        <div class="supporters-list">
+            {% for p in purchases %}
+                {% if p.status == 'completed' %}
+                    <div class="supporter-item">
+                        <div class="supporter-avatar">
+                            <i data-lucide="heart"></i>
+                        </div>
+                        <div class="supporter-info">
+                            <div class="supporter-name">{{ p.buyer_name }}</div>
+                            <div class="supporter-amount">{{ p.coffee_qty }} coffee{{ p.coffee_qty|pluralize }}</div>
+                            <div class="supporter-time">{{ p.timestamp|date:"M d, Y - H:i" }}</div>
+                            {% if p.buyer_message %}
+                                <div class="supporter-brief-message">{{ p.buyer_message|truncatechars:50 }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="supporter-status">
+                            <div class="supporter-menu">
+                                <button class="supporter-menu-btn" onclick="openSupporterModal('{{ forloop.counter0 }}')">
+                                    <i data-lucide="more-vertical" style="width: 20px; height: 20px;"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% empty %}
+                <div class="no-supporters">
+                    <div class="no-supporters-icon">
+                        <i data-lucide="users" style="height: 48px; width: 48px;"></i>
+                    </div>
+                    <h3>No supporters yet</h3>
+                    <p>Share your link to start receiving coffee donations!</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Modal overlays for supporter details -->
+{% for p in purchases %}
+    {% if p.status == 'completed' %}
+        <div id="modal-overlay-{{ forloop.counter0 }}" class="modal-overlay" onclick="closeSupporterModal('{{ forloop.counter0 }}')">
+            <div class="supporter-details" onclick="event.stopPropagation()">
+                <button class="modal-close" onclick="closeSupporterModal('{{ forloop.counter0 }}')">
+                    <i data-lucide="x" style="width: 20px; height: 20px;"></i>
+                </button>
+                <h4>Support Details</h4>
+                <div class="detail-row">
+                    <span class="detail-label">Supporter:</span>
+                    <span class="detail-value">{{ p.buyer_name }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Amount:</span>
+                    <span class="detail-value">{{ p.coffee_qty }} coffee{{ p.coffee_qty|pluralize }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Date:</span>
+                    <span class="detail-value">{{ p.timestamp|date:"M d, Y - H:i" }}</span>
+                </div>
+                {% if p.buyer_message %}
+                    <div class="supporter-message">
+                        <div class="message-label">Message:</div>
+                        <div class="message-text">{{ p.buyer_message }}</div>
+                    </div>
+                {% else %}
+                    <div class="supporter-message">
+                        <div class="message-label">Message:</div>
+                        <div class="no-message">No message included</div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+{% endfor %}
+
+<script>
+// New functions to handle modal popup
+function openSupporterModal(index) {
+    const modalOverlay = document.getElementById(`modal-overlay-${index}`);
+    modalOverlay.classList.add('show');
+    // Prevent body scroll when modal is open
+    document.body.style.overflow = 'hidden';
+}
+
+function closeSupporterModal(index) {
+    const modalOverlay = document.getElementById(`modal-overlay-${index}`);
+    modalOverlay.classList.remove('show');
+    // Restore body scroll
+    document.body.style.overflow = '';
+}
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        document.querySelectorAll('.modal-overlay.show').forEach(modal => {
+            modal.classList.remove('show');
+        });
+        document.body.style.overflow = '';
+    }
+});
+
+function copyToClipboard(elementId) {
+    const element = document.getElementById(elementId);
+    element.select();
+    element.setSelectionRange(0, 99999);
+    navigator.clipboard.writeText(element.value).then(() => {
+        // Visual feedback
+        const button = element.parentElement.querySelector('button[onclick*="copyToClipboard"]');
+        const originalIcon = button.innerHTML;
+        button.innerHTML = '<i data-lucide="check"></i>';
+        button.style.backgroundColor = '#22c55e';
+        
+        setTimeout(() => {
+            button.innerHTML = originalIcon;
+            button.style.backgroundColor = '';
+            lucide.createIcons();
+        }, 2000);
+        
+        // Recreate icons after changing innerHTML
+        lucide.createIcons();
+    });
+}
+
+function openCreatorLink() {
+    const link = document.getElementById('creator-link').value;
+    window.open(link, '_blank');
+}
+
+// Edit functionality
+function toggleEdit(section) {
+    const viewEl = document.getElementById(`${section}-view`);
+    const editEl = document.getElementById(`${section}-edit`);
+    
+    if (editEl.style.display === 'none' || !editEl.style.display) {
+        viewEl.style.display = 'none';
+        editEl.style.display = 'block';
+        
+        // Focus the input/textarea
+        const input = editEl.querySelector('input, textarea');
+        if (input) {
+            input.focus();
+            if (input.type === 'text') {
+                input.select();
+            }
+        }
+    } else {
+        cancelEdit(section);
+    }
+}
+
+function cancelEdit(section) {
+    const viewEl = document.getElementById(`${section}-view`);
+    const editEl = document.getElementById(`${section}-edit`);
+    
+    viewEl.style.display = 'block';
+    editEl.style.display = 'none';
+    
+    // Reset input values
+    if (section === 'display-name') {
+        document.getElementById('display-name-input').value = '{{ creator.display_name }}';
+    } else if (section === 'bio') {
+        document.getElementById('bio-input').value = '{{ creator.bio|default:"" }}';
+        updateBioCharCount();
+    }
+}
+
+function saveDisplayName() {
+    const newDisplayName = document.getElementById('display-name-input').value.trim();
+    
+    if (!newDisplayName) {
+        alert('Display name cannot be empty.');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('display_name', newDisplayName);
+    formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+    
+    fetch('{% url "update_profile" %}', {
+        method: 'POST',
+        body: formData,
+        credentials: 'same-origin'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update the display in view mode
+            document.querySelector('#display-name-view div').textContent = newDisplayName;
+            // Update welcome text
+            document.querySelector('.welcome-text').textContent = `Welcome back, ${newDisplayName}!`;
+            cancelEdit('display-name');
+            showUploadStatus('Display name updated successfully!', 'success');
+        } else {
+            alert(data.error || 'Failed to update display name. Please try again.');
+        }
+    })
+    .catch(error => {
+        console.error('Update error:', error);
+        alert('Failed to update display name. Please check your connection.');
+    });
+}
+
+function saveBio() {
+    const newBio = document.getElementById('bio-input').value.trim();
+    
+    const formData = new FormData();
+    formData.append('bio', newBio);
+    formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+    
+    fetch('{% url "update_profile" %}', {
+        method: 'POST',
+        body: formData,
+        credentials: 'same-origin'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update the display in view mode
+            const bioViewDiv = document.querySelector('#bio-view div');
+            if (newBio) {
+                bioViewDiv.innerHTML = newBio.replace(/\n/g, '<br>');
+                bioViewDiv.style.fontStyle = 'normal';
+                bioViewDiv.style.color = 'var(--text-primary)';
+            } else {
+                bioViewDiv.innerHTML = '<span style="color: var(--text-muted); font-style: italic;">No bio added yet</span>';
+            }
+            cancelEdit('bio');
+            showUploadStatus('Bio updated successfully!', 'success');
+        } else {
+            alert(data.error || 'Failed to update bio. Please try again.');
+        }
+    })
+    .catch(error => {
+        console.error('Update error:', error);
+        alert('Failed to update bio. Please check your connection.');
+    });
+}
+
+// Bio character count
+function updateBioCharCount() {
+    const bioInput = document.getElementById('bio-input');
+    const charCount = document.getElementById('bio-char-count');
+    if (bioInput && charCount) {
+        charCount.textContent = bioInput.value.length;
+    }
+}
+
+// Add event listener for bio character count
+document.addEventListener('DOMContentLoaded', function() {
+    const bioInput = document.getElementById('bio-input');
+    if (bioInput) {
+        bioInput.addEventListener('input', updateBioCharCount);
+        updateBioCharCount(); // Initialize count
+    }
+});
+
+// Profile picture upload functionality
+document.getElementById('profile-pic-input').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    // Validate file size (512KB = 524288 bytes)
+    if (file.size > 524288) {
+        showUploadStatus('File too large. Maximum size is 512KB.', 'error');
+        return;
+    }
+    
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+    if (!allowedTypes.includes(file.type)) {
+        showUploadStatus('Invalid file type. Only JPG and PNG are allowed.', 'error');
+        return;
+    }
+    
+    uploadProfilePic(file);
+});
+
+function uploadProfilePic(file) {
+    const formData = new FormData();
+    formData.append('profile_picture', file);
+    formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+    
+    showUploadStatus('Uploading...', 'info');
+    
+    fetch('{% url "update_profile_picture" %}', {
+        method: 'POST',
+        body: formData,
+        credentials: 'same-origin'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showUploadStatus('Profile picture updated successfully!', 'success');
+            // Reload the page to show the new profile picture
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
+        } else {
+            showUploadStatus(data.error || 'Upload failed. Please try again.', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Upload error:', error);
+        showUploadStatus('Upload failed. Please check your connection.', 'error');
+    });
+}
+
+function removeProfilePic() {
+    if (!confirm('Are you sure you want to remove your profile picture?')) {
+        return;
+    }
+    
+    showUploadStatus('Removing...', 'info');
+    
+    fetch('{% url "remove_profile_picture" %}', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'Content-Type': 'application/json',
+        },
+        credentials: 'same-origin'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showUploadStatus('Profile picture removed successfully!', 'success');
+            // Reload the page to show the changes
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
+        } else {
+            showUploadStatus(data.error || 'Remove failed. Please try again.', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Remove error:', error);
+        showUploadStatus('Remove failed. Please check your connection.', 'error');
+    });
+}
+
+function saveDisplayName() {
+        const newDisplayName = document.getElementById('display-name-input').value.trim();
+        
+        if (!newDisplayName) {
+            alert('Display name cannot be empty.');
+            return;
+        }
+        
+        const formData = new FormData();
+        formData.append('display_name', newDisplayName);
+        formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+        
+        fetch('{% url "update_profile" %}', {
+            method: 'POST',
+            body: formData,
+            credentials: 'same-origin'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.querySelector('#display-name-view .display-name-container').textContent = newDisplayName;
+                document.querySelector('.welcome-text').textContent = `Welcome back, ${newDisplayName}!`;
+                cancelEdit('display-name');
+                showSectionStatus('display-name', 'Display name updated successfully!', 'success');
+            } else {
+                showSectionStatus('display-name', data.error || 'Failed to update display name. Please try again.', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Update error:', error);
+            showSectionStatus('display-name', 'Failed to update display name. Please check your connection.', 'error');
+        });
+    }
+
+    function saveBio() {
+        const newBio = document.getElementById('bio-input').value.trim();
+        
+        const formData = new FormData();
+        formData.append('bio', newBio);
+        formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+        
+        fetch('{% url "update_profile" %}', {
+            method: 'POST',
+            body: formData,
+            credentials: 'same-origin'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const bioViewDiv = document.querySelector('#bio-view div');
+                if (newBio) {
+                    bioViewDiv.innerHTML = newBio.replace(/\n/g, '<br>');
+                    bioViewDiv.style.fontStyle = 'normal';
+                    bioViewDiv.style.color = 'var(--text-primary)';
+                } else {
+                    bioViewDiv.innerHTML = '<span style="color: var(--text-muted); font-style: italic;">No bio added yet</span>';
+                }
+                cancelEdit('bio');
+                showSectionStatus('bio', 'Bio updated successfully!', 'success');
+            } else {
+                showSectionStatus('bio', data.error || 'Failed to update bio. Please try again.', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Update error:', error);
+            showSectionStatus('bio', 'Failed to update bio. Please check your connection.', 'error');
+        });
+    }
+
+    // Add new function for section-specific status messages
+    function showSectionStatus(section, message, type) {
+        const statusEl = document.getElementById(`${section}-status`);
+        statusEl.textContent = message;
+        statusEl.className = `upload-status ${type}`;
+        statusEl.style.display = 'block';
+        
+        if (type === 'success') {
+            setTimeout(() => {
+                statusEl.textContent = '';
+                statusEl.className = 'upload-status';
+                statusEl.style.display = 'none';
+            }, 3000);
+        }
+    }
+
+function showUploadStatus(message, type) {
+    const statusEl = document.getElementById('upload-status');
+    statusEl.textContent = message;
+    statusEl.className = `upload-status ${type}`;
+    statusEl.style.display = 'block';
+    
+    if (type === 'success') {
+        setTimeout(() => {
+            statusEl.textContent = '';
+            statusEl.className = 'upload-status';
+            statusEl.style.display = 'none';
+        }, 3000);
+    }
+}
+
+function deactivateAccount() {
+    if (!confirm('Are you sure you want to deactivate your account? This will temporarily disable your creator page and prevent new supporters from donating. You can reactivate your account by contacting support.')) {
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+    
+    fetch('{% url "deactivate_account" %}', {
+        method: 'POST',
+        body: formData,
+        credentials: 'same-origin'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Your account has been deactivated successfully. Please contact support to reactivate it.');
+            window.location.reload();
+        } else {
+            alert(data.error || 'Failed to deactivate account. Please try again.');
+        }
+    })
+    .catch(error => {
+        console.error('Deactivation error:', error);
+        alert('Failed to deactivate account. Please check your connection.');
+    });
+}
+
+// Add confirmation for logout
+document.querySelector('form[action="{% url "account_logout" %}"]').addEventListener('submit', function(event) {
+    if (!confirm('Are you sure you want to log out?')) {
+        event.preventDefault();
+    }
+});
+</script>
+{% endblock %}

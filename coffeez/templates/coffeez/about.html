@@ -1,0 +1,27 @@
+{% extends "coffeez/base.html" %}
+{% load static %}
+
+{% block title %}About Coffeez{% endblock %}
+
+{% block extra_css %}
+{% endblock %}
+
+{% block content %}
+<div style="max-width: 580px; margin: 0 auto;">
+    <img src="{% static 'images/cleanwhitelogotm.png' %}" alt="Coffeez Logo" style="width: 15rem; height: 15rem; margin-bottom: -1rem; border: none; border-radius: 0;">
+    <h2 style="text-align: center;">About Coffeez</h2>
+    <p style="text-align: left;">Hi, I’m Radan, the creator of Coffeez, a platform born from my love of coffee and a passion for creating useful software.</p>
+
+    <p style="text-align: left;">Coffeez is a simple, transparent micro-donations platform that lets creators receive instant, uncut, and borderless payments. Built with a non-custodial wallet system, it ensures creators always stay in full control of their funds.</p>
+
+    <p style="text-align: left;">Our focus is on speed, ease of use, and respect for user privacy, making it effortless for both creators and supporters to connect and transact.</p>
+
+    <p style="text-align: left;">Coffeez is opensource and the source is available on GitHub.</p>
+
+    <p style="text-align: left;">If you have any suggestions, feedback, or ideas for collaboration, please don’t hesitate to reach out.</p>
+
+    <p style="text-align: left;">I hope you enjoy!</p>
+
+    <p class="signature" style="font-size: 3rem; text-align: left; margin-top: -1rem;">Radan Bahrami</p>
+</div>
+{% endblock %}

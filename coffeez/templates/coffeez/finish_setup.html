@@ -1,0 +1,466 @@
+{% extends "coffeez/base.html" %}
+{% load static %}
+
+{% block title %}Finish Setup - Coffeez{% endblock %}
+
+{% block extra_head %}
+<meta name="robots" content="noindex, nofollow">
+<script src="https://cdn.jsdelivr.net/npm/tronweb@5.3.0/dist/TronWeb.js"></script>
+<style>
+    .profile-pic-buttons .glass-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.25rem;
+    }
+    
+    .profile-pic-buttons .glass-btn i {
+        margin-right: 0;
+    }
+
+    .card {
+      background: var(--surface);
+      width: 18rem; /* Changed from 24rem to match input widths */
+      max-width: 100%; /* Ensure responsive behavior */
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      justify-content: center;
+      margin: 0 auto; /* Center the card */
+      display: block; /* Ensure it's a block element for centering */
+    }
+    .card:hover {
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    }
+    .card h3 {
+      color: var(--accent);
+      font-size: 1.2rem;
+      margin-bottom: 1.5rem;
+      font-weight: 600;
+      text-align: left;
+    }
+    
+    /* Center all labels */
+    #profile-pic-label,
+    #display-name-label,
+    #username-label,
+    #wallet-label {
+        display: block;
+        text-align: left;
+        margin: 1.5rem auto 0.5rem auto;
+        color: var(--text-primary);
+        font-size: 1.1rem;
+        font-weight: 600;
+        max-width: 22rem; /* Changed from 24rem to match the card width */
+        width: 100%;
+    }
+    
+    @media (max-width: 768px) {
+        .profile-pic-buttons {
+            flex-direction: row;
+            justify-content: center;
+            gap: 1rem;
+        }
+        .card { padding: 1.5rem; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{% csrf_token %}
+<h1>Finish Setup: Your Profile and Wallet</h1>
+
+<!-- Profile Picture Section (NEW) -->
+<label id="profile-pic-label">Profile Picture:</label>
+<div class="card">
+  <div class="profile-pic-section">
+    <div class="current-profile-pic" id="profile-pic-preview">
+      <div class="no-profile-pic">
+        <i data-lucide="user-round" style="height: 100px; width: 100px; margin-bottom: -2rem;"></i>
+      </div>
+    </div>
+    <form id="profile-pic-form" enctype="multipart/form-data" class="profile-pic-form">
+      <input type="file" 
+             id="profile-pic-input" 
+             name="profile_picture" 
+             accept="image/jpeg,image/jpg,image/png"
+             style="display: none;">
+      <div class="profile-pic-buttons">
+        <button type="button" 
+                onclick="document.getElementById('profile-pic-input').click()" 
+                class="glass-btn">
+          <i data-lucide="upload"></i>
+          Upload
+        </button>
+        <button type="button" 
+                onclick="removeProfilePic()" 
+                class="glass-btn remove-btn"
+                id="remove-pic-btn"
+                style="display: none;">
+          <i data-lucide="trash-2"></i>
+          Remove
+        </button>
+      </div>
+    </form>
+    <div id="upload-status" class="upload-status" style="display: none;"></div>
+  </div>
+  <p class="card-description" style="text-align: center;">Upload a profile picture (Max 512KB, JPG/PNG only)</p>
+</div>
+
+<!-- Display Name Field -->
+<label id="display-name-label" for="display_name">Display Name:</label>
+<input type="text" id="display_name" name="display_name" required placeholder="e.g. Radan Bahrami" style="margin-bottom: 0.5rem; display: block; width: 22rem; max-width: 100%;">
+<div style="margin-bottom: 0.7rem; width: 320px; max-width: 100%; margin-left: auto; margin-right: auto;">
+  <small style="color: var(--text-muted); display: block; text-align: left;">
+    You can change this later.
+  </small>
+</div>
+
+<label id="username-label" for="username" style="margin-top: 0rem;">Username:</label>
+<input type="text" id="username" name="username" required placeholder="e.g. radanbahrami" style="margin-bottom: 0.5rem; display: block; width: 22rem; max-width: 100%;">
+<div style="margin-bottom: 0.7rem; width: 320px; max-width: 100%; margin-left: auto; margin-right: auto;">
+  <small style="color: var(--text-muted); display: block; text-align: left;">
+    <b>Note:</b> You <b>cannot</b> change this later. This will be your permanent Coffeez URL:
+  </small>
+  <small style="color: var(--text-muted); display: block; text-align: left;">
+    coffeez.xyz/<span id="liveUsername" style="font-weight: bold; color: var(--accent);"></span>
+  </small>
+</div>
+
+<!-- Wallet generation section -->
+<label id="wallet-label" style="display:block; margin-top:10px;">Wallet:</label>
+<button id="generateWalletBtn">Generate New Wallet</button>
+<div id="walletInfo" style="display: none; margin-top: 20px;">
+  <div style="background: var(--surface); padding: 20px; border-radius: 12px; color: var(--text-primary); box-shadow: 0 8px 32px rgba(0,0,0,0.1); border: 1px solid var(--border);">
+    <h3 style="margin: 0 0 15px 0; font-size: 18px; color: var(--accent);">Your Wallet is Ready</h3>
+    
+    <!-- Address Section -->
+    <div style="background: var(--bg-dark); padding: 12px; border-radius: 8px; margin-bottom: 12px; border: 1px solid var(--border);">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-size: 14px; color: var(--text-muted);">Wallet Address:</span>
+        <button onclick="copyToClipboard('address', this)" class="glass-btn">Copy</button>
+      </div>
+      <div id="address" style="font-family: monospace; font-size: 13px; word-break: break-all; margin-top: 5px; background: var(--bg-dark); padding: 8px; border-radius: 4px; border: 1px solid var(--border); color: var(--text-primary);"></div>
+    </div>
+    
+    <!-- Private Key Section -->
+    <div style="background: var(--bg-dark); padding: 12px; border-radius: 8px; border: 1px solid var(--warning);">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-size: 14px; color: var(--text-muted); display: flex; align-items: center;">
+          Private Key:
+          <span style="background: var(--warning); color: black; font-size: 10px; padding: 2px 6px; border-radius: 3px; margin-left: 8px; font-weight: bold;">SECRET</span>
+        </span>
+        <div>
+          <button onclick="togglePrivateKey()" id="togglePkBtn" class="glass-btn" style="margin-right: 8px;">Show</button>
+          <button onclick="copyToClipboard('privateKey', this)" class="glass-btn">Copy</button>
+        </div>
+      </div>
+      <div id="privateKey" style="font-family: monospace; font-size: 13px; word-break: break-all; margin-top: 5px; background: var(--bg-dark); padding: 8px; border-radius: 4px; filter: blur(4px); transition: filter 0.3s; border: 1px solid var(--border); color: var(--text-primary);"></div>
+    </div>
+    
+    <!-- Warning -->
+    <div style="background: var(--bg-dark); border-left: 4px solid var(--error); padding: 10px; margin-top: 15px; border-radius: 4px; border: 1px solid var(--border);">
+      <small style="color: var(--warning);"><b>Important:</b> Your private key is the <b>only</b> way to access your funds. This is the <b>only time</b> it will be shown. Store it safely and never share it with anyone. Anyone with your private key can access your funds.</small>
+    </div>
+  </div>
+</div>
+
+<!-- Centered mandatory checkbox above the Finish Setup button -->
+<div style="margin: 24px 0 12px 0; display: flex; align-items: center; justify-content: center;">
+  <input type="checkbox" id="mandatoryCheckbox" style="margin-right: 8px;">
+  <label for="mandatoryCheckbox" style="font-size: 0.95rem; color: var(--text-muted); cursor:pointer;">
+    I have taken note of my private key and will not share it with anyone.
+  </label>
+</div>
+
+<button id="confirmBtn">Finish Setup</button>
+<div id="setupError" style="margin-top:10px; color: var(--error); font-size: 0.98rem; min-height: 22px; display: flex; justify-content: center; align-items: center; text-align: center;"></div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const addressEl = document.getElementById('address');
+  const pkEl = document.getElementById('privateKey');
+  const confirmBtn = document.getElementById('confirmBtn');
+  const generateWalletBtn = document.getElementById('generateWalletBtn');
+  const walletInfo = document.getElementById('walletInfo');
+
+  let privateKeyVisible = false;
+  let uploadedProfilePic = null; // Store the uploaded file for later use
+  
+  function copyToClipboard(elementId, buttonElement) {
+    const text = document.getElementById(elementId).textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      // Show a brief success message
+      const originalText = buttonElement.textContent;
+      buttonElement.textContent = 'Copied';
+      buttonElement.style.background = 'rgba(0, 255, 0, 0.2)';
+      buttonElement.style.borderColor = 'rgba(0, 255, 0, 0.4)';
+      setTimeout(() => {
+        buttonElement.textContent = originalText;
+        buttonElement.style.background = 'rgba(255, 255, 255, 0.1)';
+        buttonElement.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+      }, 2000);
+    }).catch(err => {
+      console.error('Failed to copy: ', err);
+      alert('Failed to copy to clipboard');
+    });
+  }
+  
+  function togglePrivateKey() {
+    const pkElement = document.getElementById('privateKey');
+    const toggleBtn = document.getElementById('togglePkBtn');
+    
+    if (privateKeyVisible) {
+      pkElement.style.filter = 'blur(4px)';
+      toggleBtn.textContent = 'Show';
+      privateKeyVisible = false;
+    } else {
+      pkElement.style.filter = 'none';
+      toggleBtn.textContent = 'Hide';
+      privateKeyVisible = true;
+    }
+  }
+
+  const mandatoryCheckbox = document.getElementById('mandatoryCheckbox');
+
+  // Profile picture upload functionality
+  document.getElementById('profile-pic-input').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    // Validate file size (512KB = 524288 bytes)
+    if (file.size > 524288) {
+      showUploadStatus('File too large. Maximum size is 512KB.', 'error');
+      return;
+    }
+    
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+    if (!allowedTypes.includes(file.type)) {
+      showUploadStatus('Invalid file type. Only JPG and PNG are allowed.', 'error');
+      return;
+    }
+    
+    // Store the file for later upload
+    uploadedProfilePic = file;
+    
+    // Show preview
+    showProfilePicPreview(file);
+    showUploadStatus('Profile picture ready to upload with your profile!', 'success');
+  });
+
+  function showProfilePicPreview(file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const previewContainer = document.getElementById('profile-pic-preview');
+      previewContainer.innerHTML = `<img src="${e.target.result}" alt="Profile preview" class="dashboard-profile-pic">`;
+      
+      // Show remove button
+      document.getElementById('remove-pic-btn').style.display = 'inline-block';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function removeProfilePic() {
+    uploadedProfilePic = null;
+    const previewContainer = document.getElementById('profile-pic-preview');
+    previewContainer.innerHTML = `
+      <div class="no-profile-pic">
+        <i data-lucide="user-round" style="height: 100px; width: 100px; margin-bottom: -2rem;"></i>
+      </div>
+    `;
+    
+    // Hide remove button
+    document.getElementById('remove-pic-btn').style.display = 'none';
+    
+    // Recreate icons
+    lucide.createIcons();
+    
+    showUploadStatus('Profile picture removed.', 'info');
+    
+    // Clear the file input
+    document.getElementById('profile-pic-input').value = '';
+  }
+
+  function showUploadStatus(message, type) {
+    const statusEl = document.getElementById('upload-status');
+    statusEl.textContent = message;
+    statusEl.className = `upload-status ${type}`;
+    statusEl.style.display = 'block';
+    
+    if (type === 'success') {
+      setTimeout(() => {
+        statusEl.textContent = '';
+        statusEl.className = 'upload-status';
+        statusEl.style.display = 'none';
+      }, 3000);
+    }
+  }
+
+  // Generate wallet button handler
+  generateWalletBtn.addEventListener('click', async () => {
+    generateWalletBtn.textContent = 'Generating...';
+    generateWalletBtn.disabled = true;
+
+    const tronWeb = new TronWeb({
+      fullHost: 'https://api.trongrid.io',
+    });
+
+    try {
+      const account = await tronWeb.createAccount();
+      const address = account.address.base58;
+      const privateKey = account.privateKey;
+
+      addressEl.textContent = address;
+      pkEl.textContent = privateKey;
+
+      // Reset private key visibility
+      privateKeyVisible = false;
+      pkEl.style.filter = 'blur(4px)';
+      document.getElementById('togglePkBtn').textContent = 'Show';
+
+      // Show wallet info with animation
+      walletInfo.style.display = 'block';
+      walletInfo.style.opacity = '0';
+      walletInfo.style.transform = 'translateY(20px)';
+      walletInfo.style.transition = 'all 0.5s ease';
+      
+      setTimeout(() => {
+        walletInfo.style.opacity = '1';
+        walletInfo.style.transform = 'translateY(0)';
+      }, 100);
+      
+      confirmBtn.disabled = false;
+
+      // Store in localStorage (for testing only)
+      localStorage.setItem('tron_address', address);
+      localStorage.setItem('tron_private_key', privateKey);
+
+      // Change button to "Wallet Generated" and disable it
+      generateWalletBtn.textContent = 'Wallet Generated';
+      generateWalletBtn.disabled = true;
+
+    } catch (err) {
+      console.error('Wallet creation failed:', err);
+      alert('Error creating wallet. Please try again.');
+      generateWalletBtn.textContent = 'Generate New Wallet';
+      generateWalletBtn.disabled = false;
+    }
+  });
+
+  // Confirm button handler
+  confirmBtn.addEventListener('click', async () => {
+    const displayName = document.getElementById('display_name').value.trim();
+    const username = document.getElementById('username').value.trim();
+    const address = addressEl.textContent.trim();
+    const errorDiv = document.getElementById('setupError');
+    errorDiv.textContent = '';
+
+    // Validation
+    if (!displayName) {
+      errorDiv.textContent = 'Please enter a display name.';
+      return;
+    }
+    if (!username) {
+      errorDiv.textContent = 'Please enter a username.';
+      return;
+    }
+    if (!address) {
+      errorDiv.textContent = 'Please generate a wallet first.';
+      return;
+    }
+    if (!mandatoryCheckbox.checked) {
+      errorDiv.textContent = 'You must acknowledge that you have saved your private key.';
+      return;
+    }
+
+    // Disable button and show loading state
+    confirmBtn.disabled = true;
+    confirmBtn.textContent = 'Finishing Setup...';
+
+    try {
+      // Get CSRF token from the form at the top of the page
+      const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+      
+      const response = await fetch('/finish-setup/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrfToken,
+        },
+        credentials: 'same-origin',
+        body: JSON.stringify({
+          display_name: displayName,
+          username: username,
+          wallet_address: address
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        // If we have a profile picture, upload it after successful setup
+        if (uploadedProfilePic) {
+          showUploadStatus('Uploading profile picture...', 'info');
+          await uploadProfilePicture(uploadedProfilePic);
+        }
+        
+        // Success - redirect to dashboard
+        errorDiv.style.color = 'var(--success)';
+        errorDiv.textContent = 'Setup complete! Redirecting...';
+        
+        setTimeout(() => {
+          window.location.href = '{% url "creator_dashboard" %}';
+        }, 1500);
+      } else {
+        // Handle errors from backend
+        errorDiv.textContent = data.error || 'Setup failed. Please try again.';
+        confirmBtn.disabled = false;
+        confirmBtn.textContent = 'Finish Setup';
+      }
+    } catch (error) {
+      console.error('Setup request failed:', error);
+      errorDiv.textContent = 'Network error. Please check your connection and try again.';
+      confirmBtn.disabled = false;
+      confirmBtn.textContent = 'Finish Setup';
+    }
+  });
+
+  // Function to upload profile picture after setup is complete
+  async function uploadProfilePicture(file) {
+    const formData = new FormData();
+    formData.append('profile_picture', file);
+    formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+    
+    try {
+      const response = await fetch('{% url "update_profile_picture" %}', {
+        method: 'POST',
+        body: formData,
+        credentials: 'same-origin'
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        showUploadStatus('Profile picture uploaded successfully!', 'success');
+      } else {
+        console.error('Profile picture upload failed:', data.error);
+        // Don't show error to user since main setup was successful
+      }
+    } catch (error) {
+      console.error('Profile picture upload error:', error);
+      // Don't show error to user since main setup was successful
+    }
+  }
+
+  // Live username preview
+  const usernameInput = document.getElementById('username');
+  const liveUsername = document.getElementById('liveUsername');
+  usernameInput.addEventListener('input', function() {
+    liveUsername.textContent = this.value || '';
+  });
+</script>
+{% endblock %}

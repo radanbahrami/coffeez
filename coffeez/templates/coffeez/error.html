@@ -1,0 +1,12 @@
+{% extends "coffeez/base.html" %}
+
+{% block title %}Coffeez{% endblock %}
+
+{% block content %}
+<div class="error-container" style="text-align: center; margin-top: 50px;">
+    <i data-lucide="alert-circle" style="width: 54px; height: 54px; margin-bottom: -1rem;"></i>
+    <h1>{{ error_title }}</h1>
+    <p>{{ error_message }}</p>
+    <a href="/" class="button" style="margin-top: 20px;">Go Back to Homepage</a>
+</div>
+{% endblock %}

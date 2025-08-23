@@ -1,0 +1,40 @@
+{% extends 'coffeez/base.html' %}
+
+{% block title %}Guide - How to access your funds{% endblock %}
+
+{% block content %}
+<body>
+  <div>
+    <h1>Accessing Your Funds with Your Private Key</h1>
+
+    <div>
+      <div style="background: var(--bg-dark); border-left: 4px solid var(--error); padding: 10px; padding-left: 1.3rem; margin-top: 15px; border-radius: 4px; border: 1px solid var(--border);">
+      <p style="color: var(--warning); text-align: center;"><b>Important:</b> Your private key is the <b>only</b> way to access your funds. Keep it safe and never share it with anyone. Anyone with your private key can access your funds. Coffeez never asks for your private key.</p>
+    </div>
+    </div>
+
+    <div>
+      <h2>What you’ll need</h2>
+      <ul style="list-style-type: disc; padding-left: 20px;">
+        <li>Your <strong>TRON private key</strong> (64 hex characters; shown at account creation).</li>
+        <li>A <strong>TRON-compatible wallet</strong> that supports “Import via Private Key” (e.g., reputable TRON browser extensions or mobile crypto wallets).</li>
+      </ul>
+    </div>
+
+    <div>
+      <h2>Step-by-Step: How to Access Your Funds</h2>
+      <ol style="padding-left: 20px;">
+        <li><strong>Download a trusted wallet.</strong> Use an official app store or the wallet’s official website. Avoid ads and look-alike sites.</li>
+        <li><strong>Choose “Import” → “Private Key”.</strong> In the wallet, look for options like <em>Import wallet</em>, <em>Restore</em>, or <em>Add account</em>, then select <em>Private Key</em>.</li>
+        <li><strong>Paste your private key.</strong></li>
+        <li><strong>Optional: Move funds to a new wallet (Recommended).</strong> For best security, create a new wallet (with a new seed phrase) and send your funds to it. Keep the new seed phrase safe.</li>
+      </ol>
+    </div>
+
+    <div>
+      <p style="color: var(--warning);"><strong>Reminder:</strong> We will <u>never</u> ask you for your private key. If anyone claiming to be support requests it, it’s a scam.</p>
+    </div>
+  </div>
+</body>
+</html>
+{% endblock %}
