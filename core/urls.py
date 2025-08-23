@@ -19,12 +19,15 @@ For more information on Django URL configuration:
 https://docs.djangoproject.com/en/5.2/topics/http/urls/
 """
 
+import os
 from django.contrib import admin
 from django.urls import path, include
 
+ADMIN_URL = os.environ["DJANGO_ADMIN_URL"] 
+
 urlpatterns = [
     # Django admin interface for site administration
-    path('admin/', admin.site.urls),
+    path(f"{ADMIN_URL}/", admin.site.urls),
     
     # All application URLs are handled by the coffeez app
     path('', include('coffeez.urls')),
