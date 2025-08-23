@@ -43,7 +43,7 @@ HCAPTCHA_SECRET_KEY = os.environ.get('HCAPTCHA_SECRET')
 # SECURITY WARNING: Don't run with debug turned on in production!
 DEBUG = os.getenv("DJANGO_DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "").split(",")
 
 # Application Definition
 INSTALLED_APPS = [
@@ -140,9 +140,9 @@ WSGI_APPLICATION = 'core.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.environ.get('MYSQL_DATABASE', 'your_db_name'),
-        'USER': os.environ.get('MYSQL_USER', 'your_db_user'),
-        'PASSWORD': os.environ.get('MYSQL_PASSWORD', 'your_db_password'),
+        'NAME': os.environ['MYSQL_DATABASE'],
+        'USER': os.environ['MYSQL_USER'],
+        'PASSWORD': os.environ['MYSQL_PASSWORD'],
         'HOST': os.environ.get('MYSQL_HOST', 'localhost'),
         'PORT': os.environ.get('MYSQL_PORT', '3306'),
     }
