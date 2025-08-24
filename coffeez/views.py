@@ -856,12 +856,32 @@ def _send_verification_code(user: User):
         f"It expires in 15 minutes. If you didn't request this, you can ignore this email.\n\n"
         f"Thanks,\nCoffeez"
     )
-    from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', None)
-    try:
-        send_mail(subject, message, from_email, [user.email], fail_silently=True)
-    except Exception as e:
-        # Silently ignore; surface minimal info in UI elsewhere if needed
-        pass
+    from coffeez.utils import send_dkim_email
+    import os
+    debug_mode = os.environ.get('DEBUG', 'False') == 'True'
+    if debug_mode:
+        print("--- Coffeez Verification Email ---")
+        print(f"To: {user.email}")
+        print(f"Subject: {subject}")
+        print(f"Message:\n{message}")
+        print("-------------------------------")
+    else:
+        try:
+            send_dkim_email(
+                subject,
+                message,
+                user.email,
+                from_email='noreply@coffeez.xyz',
+                dkim_selector=os.environ['COFFEEZ_DKIM_SELECTOR'],
+                dkim_domain=os.environ['COFFEEZ_DKIM_DOMAIN'],
+                dkim_key_path=os.environ['COFFEEZ_DKIM_KEY_PATH'],
+                smtp_host=os.environ['COFFEEZ_SMTP_HOST'],
+                smtp_port=465,
+                smtp_user='test@coffeez.xyz',
+                smtp_pass=os.environ['COFFEEZ_SMTP_PASS']
+            )
+        except Exception as e:
+            print("Couldn't send email")
 
 
 @login_required

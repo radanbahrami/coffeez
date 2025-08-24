@@ -1,17 +1,22 @@
 """
 Coffeez Utilities
 
-This module provides utility functions for cryptocurrency operations:
+This module provides utility functions for cryptocurrency operations and email sending:
 - TRX price fetching from external APIs
 - Unique payment amount generation for donation tracking
 - Transaction verification on the TRON blockchain
+- DKIM-signed email sending
 
 These utilities are essential for the donation/payment flow.
 """
 
-import random
 import requests
 import secrets
+import smtplib
+import dkim
+import email.utils
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 
 def get_trx_price_usd():
@@ -100,3 +105,32 @@ def check_for_exact_donation(address, amount):
             if abs(value - amount) < 0.000001:
                 return tx["txID"]
     return None
+
+
+def send_dkim_email(subject, message, to_email, from_email, dkim_selector, dkim_domain, dkim_key_path, smtp_host, smtp_port, smtp_user, smtp_pass):
+    # Build message
+    msg = MIMEMultipart()
+    msg['From'] = from_email
+    msg['To'] = to_email
+    msg['Subject'] = subject
+    msg['Date'] = email.utils.formatdate()
+    msg['Message-ID'] = email.utils.make_msgid(domain=dkim_domain)
+    msg.attach(MIMEText(message, "plain"))
+
+    # DKIM signing
+    headers = [b"To", b"From", b"Subject", b"Date", b"Message-ID"]
+    with open(dkim_key_path, "rb") as fh:
+        dkim_private = fh.read()
+    sig = dkim.sign(
+        message=msg.as_bytes(),
+        selector=dkim_selector.encode(),
+        domain=dkim_domain.encode(),
+        privkey=dkim_private,
+        include_headers=headers,
+    )
+    msg["DKIM-Signature"] = sig.decode().lstrip("DKIM-Signature: ")
+
+    # Send via SMTP
+    with smtplib.SMTP_SSL(smtp_host, smtp_port) as s:
+        s.login(smtp_user, smtp_pass)
+        s.sendmail(from_email, to_email, msg.as_string())
