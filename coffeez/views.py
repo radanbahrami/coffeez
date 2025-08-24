@@ -856,9 +856,11 @@ def _send_verification_code(user: User):
         f"It expires in 15 minutes. If you didn't request this, you can ignore this email.\n\n"
         f"Thanks,\nCoffeez"
     )
-    from utils import send_dkim_email
+    from .utils import send_dkim_email
     import os
-    debug_mode = os.environ.get('DEBUG', 'False') == 'True'
+    
+    debug_mode = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
+    
     if debug_mode:
         print("--- Coffeez Verification Email ---")
         print(f"To: {user.email}")
@@ -866,6 +868,8 @@ def _send_verification_code(user: User):
         print(f"Message:\n{message}")
         print("-------------------------------")
     else:
+        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+        dkim_key_path = os.path.join(BASE_DIR, os.environ['DKIM_KEY_PATH'])
         try:
             send_dkim_email(
                 subject,
@@ -874,7 +878,7 @@ def _send_verification_code(user: User):
                 from_email='noreply@coffeez.xyz',
                 dkim_selector=os.environ['DKIM_SELECTOR'],
                 dkim_domain=os.environ['DKIM_DOMAIN'],
-                dkim_key_path=os.environ['DKIM_KEY_PATH'],
+                dkim_key_path=dkim_key_path,
                 smtp_host=os.environ['SMTP_HOST'],
                 smtp_port=465,
                 smtp_user='noreply@coffeez.xyz',
