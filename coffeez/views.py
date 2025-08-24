@@ -479,9 +479,13 @@ def finish_setup(request):
                 return JsonResponse({'error': 'Username already taken'}, status=400)
             
             # Create or update creator profile
-            creator, created = Creator.objects.get_or_create(user=request.user)
-            creator.username = username
-            creator.display_name = display_name
+            try:
+                creator = Creator.objects.get(user=request.user)
+            except Creator.DoesNotExist:
+                creator = Creator(user=request.user, username=username, display_name=display_name)
+            else:
+                creator.username = username
+                creator.display_name = display_name
 
             # Run full model validation including custom validators
             try:
