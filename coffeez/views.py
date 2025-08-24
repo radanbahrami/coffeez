@@ -872,13 +872,13 @@ def _send_verification_code(user: User):
                 message,
                 user.email,
                 from_email='noreply@coffeez.xyz',
-                dkim_selector=os.environ['COFFEEZ_DKIM_SELECTOR'],
-                dkim_domain=os.environ['COFFEEZ_DKIM_DOMAIN'],
-                dkim_key_path=os.environ['COFFEEZ_DKIM_KEY_PATH'],
-                smtp_host=os.environ['COFFEEZ_SMTP_HOST'],
+                dkim_selector=os.environ['DKIM_SELECTOR'],
+                dkim_domain=os.environ['DKIM_DOMAIN'],
+                dkim_key_path=os.environ['DKIM_KEY_PATH'],
+                smtp_host=os.environ['SMTP_HOST'],
                 smtp_port=465,
                 smtp_user='test@coffeez.xyz',
-                smtp_pass=os.environ['COFFEEZ_SMTP_PASS']
+                smtp_pass=os.environ['SMTP_PASS']
             )
         except Exception as e:
             print("Couldn't send email")
