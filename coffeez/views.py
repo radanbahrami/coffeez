@@ -856,7 +856,7 @@ def _send_verification_code(user: User):
         f"It expires in 15 minutes. If you didn't request this, you can ignore this email.\n\n"
         f"Thanks,\nCoffeez"
     )
-    from coffeez.utils import send_dkim_email
+    from utils import send_dkim_email
     import os
     debug_mode = os.environ.get('DEBUG', 'False') == 'True'
     if debug_mode:
