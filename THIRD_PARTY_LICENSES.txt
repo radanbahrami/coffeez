@@ -1,8 +1,9 @@
 THIRD-PARTY SOFTWARE LICENSES
 =====================================
 
-This file contains the licenses for third-party software packages used in this project.
-The following packages are listed with their respective licenses:
+This file contains the licenses for third-party software components used in this project.
+You must comply with and provide attribution as required by those third-party licenses. You must also pay attention to the copyright notices inside the respective licenses, found in the links provided under each component.
+The following components are listed with their respective licenses:
 
 =====================================
 
