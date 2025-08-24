@@ -15,6 +15,7 @@ import secrets
 import smtplib
 import dkim
 import email.utils
+import os
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
@@ -75,23 +76,24 @@ def generate_unique_trx_amount(usd_amount):
 def check_for_exact_donation(address, amount):
     """
     Check if an exact donation amount has been received by an address.
-    
+
     Queries the TRON blockchain to verify if a specific
     TRX amount has been sent to the given address. This is used to
     automatically detect and confirm donations.
-    
+
     Args:
         address: TRX wallet address to check for incoming transactions
         amount: Exact TRX amount to look for in recent transactions
-        
+
     Returns:
         str: Transaction ID if exact amount found, None otherwise
-        
+
     Note:
         Only checks the last 10 transactions for performance.
-        Uses Shasta testnet API - update for mainnet in production.
+        Dynamically selects Shasta testnet or mainnet API based on environment.
     """
-    url = f"https://api.shasta.trongrid.io/v1/accounts/{address}/transactions"
+    base_url = "https://api.shasta.trongrid.io" if os.environ.get('DJANGO_DEBUG', 'False') == 'True' else "https://api.trongrid.io"
+    url = f"{base_url}/v1/accounts/{address}/transactions"
     params = {"only_to": "true", "limit": 10}
     response = requests.get(url, params=params)
     data = response.json()
