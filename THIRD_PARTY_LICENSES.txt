@@ -36,7 +36,7 @@ Homepage: https://pypi.org/project/Django/
 
 dkimpy
 License: [Noted Below]
-Homepage: https://launchpad.net/dkimpy
+Homepage: https://pypi.org/project/dkimpy/
 
 idna
 License: BSD-3-Clause License
