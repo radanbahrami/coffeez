@@ -877,7 +877,7 @@ def _send_verification_code(user: User):
                 dkim_key_path=os.environ['DKIM_KEY_PATH'],
                 smtp_host=os.environ['SMTP_HOST'],
                 smtp_port=465,
-                smtp_user='test@coffeez.xyz',
+                smtp_user='noreply@coffeez.xyz',
                 smtp_pass=os.environ['SMTP_PASS']
             )
         except Exception as e:
