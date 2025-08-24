@@ -6,71 +6,75 @@ The following packages are listed with their respective licenses:
 
 =====================================
 
-altcha==0.2.0
+altcha
 License: MIT License
 Homepage: https://pypi.org/project/altcha/
 
-asgiref==3.9.1
+asgiref
 License: BSD-3-Clause License
 Homepage: https://pypi.org/project/asgiref/
 
-certifi==2025.7.14
+certifi
 License: Mozilla Public License 2.0 (MPL 2.0)
 Homepage: https://pypi.org/project/certifi/
 
-cffi==1.17.1
+cffi
 License: MIT License
 Homepage: https://pypi.org/project/cffi/
 
-charset-normalizer==3.4.2
+charset-normalizer
 License: MIT License
 Homepage: https://pypi.org/project/charset-normalizer/
 
-cryptography==45.0.5
+cryptography
 License: Apache License 2.0
 Homepage: https://pypi.org/project/cryptography/
 
-Django==5.2.4
+Django
 License: BSD-3-Clause License
 Homepage: https://pypi.org/project/Django/
 
-idna==3.10
+dkimpy
+License: [Noted Below]
+Homepage: https://launchpad.net/dkimpy
+
+idna
 License: BSD-3-Clause License
 Homepage: https://pypi.org/project/idna/
 
-pillow==11.3.0
+pillow
 License: MIT-CMU License
 Homepage: https://pypi.org/project/Pillow/
 
-pycparser==2.22
+pycparser
 License: BSD-3-Clause License
 Homepage: https://pypi.org/project/pycparser/
 
-PyJWT==2.10.1
+PyJWT
 License: MIT License
 Homepage: https://pypi.org/project/PyJWT/
 
-PyMySQL==1.1.1
+PyMySQL
 License: MIT License
 Homepage: https://pypi.org/project/PyMySQL/
 
-python-dotenv==1.1.1
+python-dotenv
 License: BSD-3-Clause License
 Homepage: https://pypi.org/project/python-dotenv/
 
-requests==2.32.4
+requests
 License: Apache License 2.0
 Homepage: https://pypi.org/project/requests/
 
-sqlparse==0.5.3
+sqlparse
 License: BSD-3-Clause License
 Homepage: https://pypi.org/project/sqlparse/
 
-typing_extensions==4.14.1
+typing_extensions
 License: Python Software Foundation License (PSF)
 Homepage: https://pypi.org/project/typing-extensions/
 
-urllib3==2.5.0
+urllib3
 License: MIT License
 Homepage: https://pypi.org/project/urllib3/
 
@@ -194,5 +198,9 @@ v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain
 one at http://mozilla.org/MPL/2.0/.
 
 ***** END LICENSE BLOCK *****
+
+License for dkimpy
+----------------------------------------
+(# This software is provided 'as-is', without any express or implied # warranty. In no event will the author be held liable for any damages # arising from the use of this software. # # Permission is granted to anyone to use this software for any purpose, # including commercial applications, and to alter it and redistribute it # freely, subject to the following restrictions: # # 1. The origin of this software must not be misrepresented; you must not # claim that you wrote the original software. If you use this software # in a product, an acknowledgment in the product documentation would be # appreciated but is not required. # 2. Altered source versions must be plainly marked as such, and must not be # misrepresented as being the original software. # 3. This notice may not be removed or altered from any source distribution.)
 
 =====================================
