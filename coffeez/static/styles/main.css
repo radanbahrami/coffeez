@@ -30,7 +30,6 @@ a:hover {
   text-decoration: underline;
 }
 
-/* Header */
 header {
   display: flex;
   align-items: center;
@@ -83,7 +82,6 @@ nav a {
   margin-top: 0.5rem;
 }
 
-/* Beta badge next to logo */
 .logo-link {
   position: relative;
   display: inline-flex;
@@ -152,7 +150,6 @@ nav a {
   transition: 0.3s;
 }
 
-/* Main */
 main {
   padding: 1rem 1rem 2rem 1rem;
   max-width: 900px;
@@ -384,10 +381,9 @@ footer {
   transition: border-color 0.2s, box-shadow 0.2s;
   font-family: 'Inter', sans-serif;
 
-  /* Ensure top alignment */
   vertical-align: top;
-  resize: none; /* Optional: disables resizing */
-  line-height: 1.5; /* Improves readability */
+  resize: none;
+  line-height: 1.5;
 }
 
 #name-input-container input:focus, #message-input-container input:focus {
@@ -635,9 +631,9 @@ footer {
   font-size: 0.9rem;
   font-family: 'Courier New', monospace;
   transition: border-color 0.2s, box-shadow 0.2s;
-  align-self: center;  /* Add this to center only the input */
-  width: 20rem;  /* Set a specific width */
-  max-width: 100%;  /* Ensure it doesn't overflow on small screens */
+  align-self: center;
+  width: 20rem;
+  max-width: 100%;
 }
 .link-section input:focus {
   outline: none;
@@ -684,7 +680,6 @@ footer {
   text-align: left;
 }
 
-/* Supporters Section */
 .supporters-section {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -839,7 +834,6 @@ footer {
   text-align: center;
 }
 
-/* Donation Status Page Styles */
 .donation-status-container {
   max-width: 600px;
   margin: 0 auto;
@@ -878,7 +872,6 @@ footer {
   font-weight: 600;
 }
 
-/* Success State */
 .donation-success {
   border-color: #22c55e;
 }
@@ -908,7 +901,6 @@ footer {
   color: #22c55e;
 }
 
-/* Pending State */
 .donation-pending {
   border-color: var(--warning);
 }
@@ -935,7 +927,6 @@ footer {
   color: var(--warning);
 }
 
-/* Waiting State */
 .donation-waiting {
   border-color: var(--accent);
 }
@@ -962,7 +953,6 @@ footer {
   color: var(--accent);
 }
 
-/* Expired State */
 .donation-expired {
   border-color: var(--error);
   background: rgba(255, 107, 107, 0.08);
@@ -1125,14 +1115,13 @@ footer {
 .profile-picture {
   width: 150px;
   height: 150px;
-  object-fit: cover; /* Ensures the image is cropped proportionally */
+  object-fit: cover;
   border-radius: 50%;
   display: block;
   margin: 0 auto;
-  image-rendering: auto; /* Ensures smooth rendering */
+  image-rendering: auto;
 }
 
-/* Profile Picture Dashboard Styles */
 .profile-pic-section {
   display: flex;
   flex-direction: column;
@@ -1252,7 +1241,6 @@ footer {
   50% { opacity: 0.5; }
 }
 
-/* Responsive */
 @media (min-width: 768px) {
   .header-actions {
     position: absolute;
