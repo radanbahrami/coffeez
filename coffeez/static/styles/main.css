@@ -83,6 +83,31 @@ nav a {
   margin-top: 0.5rem;
 }
 
+/* Beta badge next to logo */
+.logo-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+.beta-badge {
+  position: absolute;
+  left: calc(100% + 6px);
+  top: 50%;
+  transform: translateY(-55%);
+  background: #fff;
+  color: #000;
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 0.6px;
+  padding: 6px 6px;
+  margin-left: 0;
+  border-radius: 4px;
+  line-height: 1;
+  white-space: nowrap;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+  user-select: none;
+}
+
 .header-actions {
   margin-left: auto;
 }
@@ -1442,6 +1467,10 @@ footer {
     height: auto;
     display: block;
     margin-top: -0.4rem;
+  }
+  .beta-badge {
+    top: 45%;
+    margin-left: -0.5rem;
   }
   #wallet-address,
   .transaction-id-container input {
